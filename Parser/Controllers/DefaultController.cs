@@ -4,33 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Parser.Models;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Threading;
 
 namespace Parser.Controllers
 {
-   
+    [Route("api/[controller]")]
     public class DefaultController : Controller
     {
-        Context context = new Context();
         public IActionResult Index()
         {
             return View();
         }
-
-        public void UpdateUsersTable(int id)
+        [HttpGet("[action]")]
+        public IWebElement TitleArticles()
         {
-            ViewBag.Id = id;
-            var UpdateUsers = context.DbUser.Where(c => c.Id == id).FirstOrDefault();
-            ViewBag.FirstName = UpdateUsers.FirstName;
-            ViewBag.LastName = UpdateUsers.LastName;
-            ViewBag.DateSetting = UpdateUsers.DateSetting;
-            ViewBag.ViewSetting = UpdateUsers.ViewSetting;
-        }
-        public void UpdateSitesTable(int id)
-        {
-            ViewBag.Id = id;
-            var UpdateSites = context.DbSite.Where(c => c.Id == id).FirstOrDefault();
-            ViewBag.Name = UpdateSites.Name;
-            ViewBag.Domain = UpdateSites.Domain;
+            IWebDriver driver=new ChromeDriver();
+            driver.Url = @"https://habr.com/ru/news/";
+            IWebElement links = (OpenQA.Selenium.IWebElement)driver.FindElements(By.ClassName("post__title_link"));
+            return links;
         }
     }
 }

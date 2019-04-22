@@ -11,10 +11,7 @@ namespace Parser.Models
         public string Url { get; set; }
         public int SiteId { get; set; }
         public string Title { get; set; }
-        public List<UserArticle> userArticle { get; set; }
-        public Article()
-        {
-            userArticle = new List<UserArticle>();
-        }
+        public List<UserArticle> UserArticle { get; set; }
+
     }
 }

@@ -12,12 +12,7 @@ namespace Parser.Models
         public string LastName { get; set; }
         public DateTime DateSetting { get; set; }
         public byte ViewSetting { get; set; }
-        public List<UserArticle> userArticle { get; set; }
-        public List<UserSite> userSite { get; set; }
-        public User()
-        {
-            userArticle = new List<UserArticle>();
-            userSite = new List<UserSite>();
-        }
+        public List<UserArticle> UserArticle { get; set; }
+        public List<UserSite> UserSite { get; set; }
     }
 }

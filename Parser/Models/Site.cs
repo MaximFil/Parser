@@ -10,10 +10,7 @@ namespace Parser.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Domain { get; set; }
-        public List<UserSite> userSite { get; set; }
-        public Site()
-        {
-            userSite = new List<UserSite>();
-        }
+        public List<UserSite> UserSite { get; set; }
+
     }
 }
