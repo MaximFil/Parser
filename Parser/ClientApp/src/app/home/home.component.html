@@ -1,33 +1,12 @@
-<h1>Parser</h1>
+<h1>Parsing habr</h1>
 
-<p *ngIf="!links">Loading...</p>
+<p *ngIf="!ArticlesLinks">Loading...</p>
 
 <ul>
-  <li *ngFor="let hero of links">
-    <a>
-      <span class="table">{{hero.GetAttribute("href")}}</span>{{hero.Text}}
+  <li *ngFor="let articlelink of ArticlesLinks">
+    <a href={{articlelink.link}} target="_blank">
+      {{articlelink.article}}
     </a>
+    <p>{{articlelink.content}}</p>
   </li>
 </ul>
-
-
-<p *ngIf="!forecasts"><em>Loading...</em></p>
-
-<table class='table table-striped' *ngIf="forecasts">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Temp. (C)</th>
-      <th>Temp. (F)</th>
-      <th>Summary</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let forecast of forecasts">
-      <td>{{ forecast.dateFormatted }}</td>
-      <td>{{ forecast.temperatureC }}</td>
-      <td>{{ forecast.temperatureF }}</td>
-      <td>{{ forecast.summary }}</td>
-    </tr>
-  </tbody>
-</table>

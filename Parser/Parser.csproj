@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
@@ -41,6 +42,10 @@
     <Compile Remove="Migrations\20190422125646_Migr.Designer.cs" />
     <Compile Remove="Migrations\20190422125839_rer.cs" />
     <Compile Remove="Migrations\20190422125839_rer.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\app\ArticleLink.ts" />
   </ItemGroup>
 
   <ItemGroup>
