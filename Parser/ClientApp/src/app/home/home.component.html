@@ -1,12 +1,19 @@
 <h1>Parsing habr</h1>
 
 <p *ngIf="!ArticlesLinks">Loading...</p>
-
-<ul>
-  <li *ngFor="let articlelink of ArticlesLinks">
-    <a href={{articlelink.link}} target="_blank">
-      {{articlelink.article}}
-    </a>
-    <p>{{articlelink.content}}</p>
-  </li>
-</ul>
+<div class="main_block">
+  <h3>habr</h3>
+  <div id="content">
+    <ul id="col">
+      <li *ngFor="let articlelink of ArticlesLinks">
+        <div class="small_block">
+          <a href={{articlelink.link}} target="_blank">
+            {{articlelink.article}}
+          </a>
+          <p>{{articlelink.content}}</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <a class="location_link">ещё</a>
+</div>
