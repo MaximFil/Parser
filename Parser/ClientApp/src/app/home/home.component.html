@@ -3,17 +3,19 @@
 <p *ngIf="!ArticlesLinks">Loading...</p>
 <div class="main_block">
   <h3>habr</h3>
-  <div id="content">
-    <ul id="col">
+  <div> <!--id="content"-->
+    <ul class="ul_column"> <!--id="col"-->
       <li *ngFor="let articlelink of ArticlesLinks">
-        <div class="small_block">
+        <!--<div class="small_block">-->
           <a href={{articlelink.link}} target="_blank">
             {{articlelink.article}}
           </a>
           <p>{{articlelink.content}}</p>
-        </div>
+        <!--</div>-->
       </li>
     </ul>
   </div>
-  <a class="location_link">ещё</a>
+  <form>
+    <input type="button" value="ещё" />
+  </form>
 </div>

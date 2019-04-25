@@ -46,10 +46,17 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\app\ArticleLink.ts" />
+    <None Remove="ClientApp\src\app\home\habr.service.ts" />
+    <None Remove="ClientApp\src\app\home\news.ts" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\home\habr.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\home\news.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
