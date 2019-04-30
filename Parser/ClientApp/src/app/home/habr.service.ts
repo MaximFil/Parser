@@ -16,6 +16,7 @@ export class HabrService {
   public ArticlesLinks: News[];
   constructor(private http: HttpClient) { }
   getNews(): Observable<Array<News>> {
+
     return this.http.get<Array<News>>('https://localhost:44398/api/Default/GetTitleArticles');
 
   }

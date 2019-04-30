@@ -1,21 +1,40 @@
+<!DOCTYPE html>
 <h1>Parsing habr</h1>
+  <html>
+  <body>
+    <div *ngIf="isLoading==false; then loadBlock else elseLoadBlock"></div>
+    <ng-template #loadBlock>
+      <mat-spinner *ngIf="isLoading==false" mode="indeterminate" color="warn" class="center"></mat-spinner>
+    </ng-template>
+    <ng-template #elseLoadBlock>
+      <div *ngIf="countAllNews>0; then thenBlock else elseBlock"></div>     
+      <ng-template #thenBlock>
+        <div class="main_block">
+          <h3>habr</h3>
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-4 small_block" *ngFor="let articlelink of ArticlesLinksPart">
+                <a href={{articlelink.link}} target="_blank">
+                  {{articlelink.article}}
+                </a>
+                <p>{{articlelink.content}}</p>
+                <a href="{{articlelink.link}}" class="richt_down" target="_blank">More</a>
+              </div>
+            </div>
+          </div>
+          <form>
+            <button *ngIf="countPartNews*9<countAllNews" (click)="getPartNews()" type="button" class="btn btn-secondary center">still</button>
+          </form>
+        </div>
+      </ng-template>
+      <ng-template #elseBlock>
+        <div class="main_block">
+          <h3>habr</h3>
+          <p>Articles Not found</p>
+        </div>
+      </ng-template>
+    </ng-template>
+    <p> {{count}}</p>
+  </body>
+</html>
 
-<p *ngIf="!ArticlesLinks">Loading...</p>
-<div class="main_block">
-  <h3>habr</h3>
-  <div> <!--id="content"-->
-    <ul class="ul_column"> <!--id="col"-->
-      <li *ngFor="let articlelink of ArticlesLinks">
-        <!--<div class="small_block">-->
-          <a href={{articlelink.link}} target="_blank">
-            {{articlelink.article}}
-          </a>
-          <p>{{articlelink.content}}</p>
-        <!--</div>-->
-      </li>
-    </ul>
-  </div>
-  <form>
-    <input type="button" value="ещё" />
-  </form>
-</div>

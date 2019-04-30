@@ -19,18 +19,18 @@ namespace Parser.Controllers
             return View();
         }
         [HttpGet("[action]")]
-        public ArticleLink[] GetTitleArticles()
+        public async Task<ArticleLink[]> GetTitleArticles()
         {
             int i = 0;
             ArticleLink[] articleLinks;// = new ArticleLink[9];
             var config = Configuration.Default.WithDefaultLoader();
             var URL = "https://habr.com/ru/news/";
-            var document = BrowsingContext.New(config).OpenAsync(URL).Result;
+            var document = await BrowsingContext.New(config).OpenAsync(URL);
             var Items = document.QuerySelectorAll("a.post__title_link");
             articleLinks = new ArticleLink[Items.Count()];
             foreach (var item in Items)
             {
-                document = BrowsingContext.New(config).OpenAsync(item.GetAttribute("href").ToString()).Result;
+                document = await BrowsingContext.New(config).OpenAsync(item.GetAttribute("href").ToString());
                 articleLinks[i] = new ArticleLink { Article = item.Text(), Link = item.GetAttribute("href"),Content=GetContent(document) };
                 i++;
             }
