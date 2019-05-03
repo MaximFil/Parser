@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { HabrService } from './habr.service';
 import { News } from './news';
 import { MatProgressSpinner } from '@angular/material';
 import { Observable, of } from 'rxjs';
 import { finalize, catchError } from 'rxjs/operators';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalComponent } from '../modal/modal.component';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +18,7 @@ export class HomeComponent implements OnInit {
   isLoading: boolean = false;
   countAllNews: number;
   countPartNews: number = 0;
-  constructor(private habrService: HabrService) { }
+  constructor(private habrService: HabrService, private modalService: NgbModal) { }
 
   ngOnInit() {
     this.getNews();
@@ -39,6 +41,11 @@ export class HomeComponent implements OnInit {
   getPartNews(): void {
     this.ArticlesLinksPart = this.ArticlesLinksAll.slice(0, 9 * (this.countPartNews + 1));
     this.countPartNews++;
+  }
+  open(Article: any) {
+    const modalRef = this.modalService.open(ModalComponent);
+    modalRef.componentInstance.article = Article.article;
+    modalRef.componentInstance.content = Article.fullContent;
   }
 }
 

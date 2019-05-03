@@ -1,5 +1,6 @@
 export class News {
   article: string;
   link: string;
-  content: string;
+  fullContent: string;
+  partContent: string;
 }

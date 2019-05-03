@@ -17,8 +17,11 @@
                 <a href={{articlelink.link}} target="_blank">
                   {{articlelink.article}}
                 </a>
-                <p>{{articlelink.content}}</p>
-                <a href="{{articlelink.link}}" class="richt_down" target="_blank">More</a>
+                <p>{{articlelink.partContent}}</p>
+                <br>
+                <p>
+                  <button class="btn btn-link richt_down" (click)="open(articlelink)">More</button>
+                </p>
               </div>
             </div>
           </div>

@@ -22,6 +22,7 @@ namespace Parser.Controllers
         public async Task<ArticleLink[]> GetTitleArticles()
         {
             int i = 0;
+            string Content;
             ArticleLink[] articleLinks;// = new ArticleLink[9];
             var config = Configuration.Default.WithDefaultLoader();
             var URL = "https://habr.com/ru/news/";
@@ -31,15 +32,15 @@ namespace Parser.Controllers
             foreach (var item in Items)
             {
                 document = await BrowsingContext.New(config).OpenAsync(item.GetAttribute("href").ToString());
-                articleLinks[i] = new ArticleLink { Article = item.Text(), Link = item.GetAttribute("href"),Content=GetContent(document) };
+                Content = document.QuerySelector("div.post__text").TextContent.ToString();
+                articleLinks[i] = new ArticleLink { Article = item.Text(), Link = item.GetAttribute("href"),FullContent = Content,PartContent=GetContent(Content) };
                 i++;
             }
             return articleLinks;
         }
-        public string GetContent(IDocument document)
+        public string GetContent(string Content)
         {
-            int count = 100;
-            var Content = document.QuerySelector("div.post__text").TextContent.ToString();
+            int count = 100;           
                 while(Content.Substring(count,1)!=" ")
             {
                 count++;
@@ -52,7 +53,8 @@ namespace Parser.Controllers
         {
             public string Article { get; set; }
             public string Link { get; set; }
-            public string Content { get; set; }
+            public string FullContent { get; set; }
+            public string PartContent { get; set; }
         }
     }
 }
