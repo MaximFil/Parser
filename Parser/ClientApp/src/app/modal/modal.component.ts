@@ -9,8 +9,8 @@ import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class ModalComponent implements OnInit {
 
-  @Input() article: `frferfe`;
-  @Input() content: `frefrefe`;
+  @Input() article: string;
+  @Input() content: string;
 
   constructor(
     private activeModal: NgbActiveModal

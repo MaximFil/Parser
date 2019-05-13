@@ -48,8 +48,8 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\app\ArticleLink.ts" />
-    <None Remove="ClientApp\src\app\home\habr.service.ts" />
     <None Remove="ClientApp\src\app\home\news.ts" />
+    <None Remove="ClientApp\src\app\home\NewsTitle.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,8 +80,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\app\home\habr.service.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\home\news.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\NewsTitle.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\news.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
