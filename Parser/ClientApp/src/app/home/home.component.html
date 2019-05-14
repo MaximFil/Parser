@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <h1>Parsing habr</h1>
-  <html>
-  <body>
-    <div *ngIf="isLoading==false; then loadBlock else elseLoadBlock"></div>
-    <ng-template #loadBlock>
-      <mat-spinner *ngIf="isLoading==false" mode="indeterminate" color="warn" class="center"></mat-spinner>
-    </ng-template>
-    <ng-template #elseLoadBlock>
-      <div *ngIf="countAllNews>0; then thenBlock else elseBlock"></div>     
-      <ng-template #thenBlock>
+<html>
+<body>
+  <div *ngIf="isLoading==false; then loadBlock else elseLoadBlock"></div>
+  <ng-template #loadBlock>
+    <mat-spinner *ngIf="isLoading==false" mode="indeterminate" color="warn" class="center"></mat-spinner>
+  </ng-template>
+  <ng-template #elseLoadBlock>
+    <div *ngIf="countAllNews>0; then thenBlock else elseBlock"></div>
+    <ng-template #thenBlock>
+      <div *ngFor="let Items of ArticlesLinksPart;let i = index">
         <div class="main_block">
           <h3>habr</h3>
           <div class="container">
             <div class="row">
-              <div class="col-sm-4 small_block" *ngFor="let articlelink of ArticlesLinksPart">
-                <a href={{articlelink.link}} target="_blank">
-                  {{articlelink.article}}
+              <div class="col-sm-4 small_block" *ngFor="let item of Items">
+                <a href={{item.link}} target="_blank">
+                  {{item.article}}
                 </a>
-                <p>{{articlelink.partContent}}</p>
+                <p>{{item.partContent}}</p>
                 <br>
-                  <button class="btn btn-link richt_down" (click)="open(articlelink)">More</button>
+                <button class="btn btn-link richt_down" (click)="open(item)">More</button>
               </div>
             </div>
           </div>
           <form>
-            <button *ngIf="countPartNews*9<countAllNews" (click)="getPartNews()" type="button" class="btn btn-secondary center">still</button>
+            <button (click)="getPartNewsStill(i)" type="button" class="btn btn-secondary center">still</button>
           </form>
         </div>
-      </ng-template>
-      <ng-template #elseBlock>
-        <div class="main_block">
-          <h3>habr</h3>
-          <p>Articles Not found</p>
-        </div>
-      </ng-template>
+      </div>
     </ng-template>
-    <p> {{count}}</p>
-  </body>
+    <ng-template #elseBlock>
+      <div class="main_block">
+        <h3>habr</h3>
+        <p>Articles Not found</p>
+      </div>
+    </ng-template>
+  </ng-template>
+  <p> {{count}}</p>
+</body>
 </html>
+<!--*ngIf="countPartNews*9<=countAllNews"-->

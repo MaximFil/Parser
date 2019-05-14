@@ -134,18 +134,19 @@ namespace Parser.Controllers
             return articleLinks;
         }
         [HttpGet("[action]")]
-        public async Task<ArticleLinkSite[]> GetTitleArticlesSite()
+        public async Task<ArticleLink[][]> GetTitleArticlesSite()
         {
             int counter = 0;
-        ArticleLinkSite[] articleLinksSite = new ArticleLinkSite[3];
-        articleLinksSite[counter].articleLink = await GetTitleArticlesHabr();
-        articleLinksSite[counter].Site = "Habr";
+            ArticleLink[][] articleLinks = new ArticleLink[3][];
+            articleLinks[counter] = new ArticleLink[20];
+            articleLinks[counter] = await GetTitleArticlesHabr();
             counter++;
-            articleLinksSite[counter].articleLink = await GetTitleArticlesTutBy();
-        articleLinksSite[counter].Site = "TutBy";
+            articleLinks[counter] = new ArticleLink[20];
+            articleLinks[counter] = await GetTitleArticlesTutBy();
             counter++;
-            articleLinksSite[counter].articleLink = await GetTitleArticlesBelta();
-            return articleLinksSite;
+            articleLinks[counter] = new ArticleLink[20];
+            articleLinks[counter] = await GetTitleArticlesBelta();
+            return articleLinks;
         }
 
     public class ArticleLink
@@ -157,8 +158,12 @@ namespace Parser.Controllers
         }
         public class ArticleLinkSite
         {
-            public ArticleLink[] articleLink;
-            public string Site;
+            public ArticleLink[] articleLink { get; set; } = new ArticleLink[20];
+            public string Site { get; set; }
+            public ArticleLinkSite()
+            {
+                this.articleLink = new ArticleLink[20];
+            }
         }
     }
 }

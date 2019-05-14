@@ -14,14 +14,15 @@ import { NewsTitle } from '../NewsTitle';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  ArticlesLinksAll: NewsTitle[];
-  ArticlesLinksPart: Array<News>;
+  ArticlesLinksAll: News[][];
+  ArticlesLinksPart: News[][];
   Articles: Array<News>;
   isLoading: boolean = false;
   countAllNews: number;
-  countPartNews: number = 0;
+  countPartNews: number[]=[];
   constructor(private ArticleService: ArticleService, private modalService: NgbModal) {
     this.ArticlesLinksAll = [];
+    this.ArticlesLinksPart = [];
   }
 
   ngOnInit() {
@@ -35,18 +36,23 @@ export class HomeComponent implements OnInit {
         throw error;
       })
         , finalize(() => {
+          this.countAllNews = this.ArticlesLinksAll.length;
           this.getPartNews();
-          this.countAllNews = this.ArticlesLinksAll[0].news.length;
           this.isLoading = true;
         }))
       .subscribe(ArticlesLinks => (this.ArticlesLinksAll = ArticlesLinks));
-      
+
   }
 
   getPartNews(): void {
-    //вот здесь
-    this.Articles=this.ArticlesLinksAll[0].news.slice(0, 9 * (this.countPartNews + 1));
-    this.countPartNews++;
+    for (var i = 0; i < this.countAllNews; i++) {
+      this.ArticlesLinksPart[i] = this.ArticlesLinksAll[i].slice(0, 9);
+      this.countPartNews[i] = 0;
+      //this.countPartNews++;
+    }
+  }
+  getPartNewsStill(number: number): void {
+    this.ArticlesLinksPart[number] = this.ArticlesLinksAll[number].slice(0, 9 * (++this.countPartNews[number] + 1));
   }
   open(Article: any) {
     const modalRef = this.modalService.open(ModalComponent);
@@ -54,4 +60,3 @@ export class HomeComponent implements OnInit {
     modalRef.componentInstance.content = Article.fullContent;
   }
 }
-
