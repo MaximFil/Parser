@@ -13,6 +13,6 @@ import { NewsTitle } from '../NewsTitle';
 export class ArticleService {
     constructor(private http: HttpClient) { }
   getNews(): Observable<News[][]> {
-    return this.http.get<News[][]>('https://localhost:44398/api/Default/GetTitleArticlesSite');
+    return this.http.get<News[][]>('https://localhost:44398/api/Default/GetTitles');
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 //using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,16 +14,10 @@ namespace Parser.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Site> Sites { get; set; }
-        public Context()
+        public Context(DbContextOptions<Context> options) : base(options)
         {
             Database.EnsureCreated();
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=DESKTOP-95ELT9U\\SQLEXPRESS01;Database=Parser;Trusted_Connection=True;");
-        }
-
+        }  
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserArticle>()

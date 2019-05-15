@@ -9,61 +9,59 @@ using OpenQA.Selenium.Chrome;
 using System.Threading;
 using AngleSharp;
 using AngleSharp.Dom;
+using Parser.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+
 namespace Parser.Controllers
 {
     [Route("api/[controller]")]
     public class DefaultController : Controller
     {
+        private URLs urls { get; set; }
+        public DefaultController(IOptions<URLs> options)
+        {
+            urls = options.Value;
+        }
         public IActionResult Index()
         {
             return View();
         }
+
         [HttpGet("[action]")]
-        public async Task<ArticleLink[]> GetTitleArticlesHabr()
-        {
-            int i = 0;
-            string Content;
-            ArticleLink[] articleLinks;// = new ArticleLink[9];
+        public async Task<List<ViewModel>> GetTitlesHabr()
+        {         
+            var i = 0;
+            string сontent;
+            //ListModels listModels = new ListModels();
+            List<ViewModel> listModels = new List<ViewModel>();
             var config = Configuration.Default.WithDefaultLoader();
-            var URL = "https://habr.com/ru/news/";
-            var document = await BrowsingContext.New(config).OpenAsync(URL);
-            var Items = document.QuerySelectorAll("a.post__title_link");
-            articleLinks = new ArticleLink[Items.Count()];
-            foreach (var item in Items)
+            var document = await BrowsingContext.New(config).OpenAsync(urls.Habr);
+            var items = document.QuerySelectorAll("a.post__title_link");
+            listModels = new List<ViewModel>();
+            foreach (var item in items)
             {
                 document = await BrowsingContext.New(config).OpenAsync(item.GetAttribute("href").ToString());
-                Content = document.QuerySelector("div.post__text").TextContent.ToString();
-                articleLinks[i] = new ArticleLink { Article = item.Text(), Link = item.GetAttribute("href"),FullContent = Content,PartContent=GetContent(Content) };
+                сontent = document.QuerySelector("div.post__text").TextContent.ToString();
+                listModels.Add(new ViewModel {
+                    Article = item.Text(),
+                    Link = item.GetAttribute("href"),
+                    FullContent = сontent,
+                    PartContent =GetContent(сontent)
+                });
                 i++;
             }
-            return articleLinks;
+            return listModels;
         }
-        public string GetContent(string Content)
-        {
-            int count = 100;
-            string str;
-            if (Content.Length > 100) { 
-                while(Content.Substring(count,1)!=" " && Content.Substring(count, 1) != ".")
-            {
-                count++;
-            }
-            
-            str = Content.Substring(0, count);
-            }
-            else
-            {
-                str = Content;
-            }
-            return str;
-        }
+
         [HttpGet("[action]")]
-        public async Task<ArticleLink[]> GetTitleArticlesTutBy()
+        public async Task<List<ViewModel>> GetTitlesTutBy()
         {
-            int i = 0;
-            ArticleLink[] articleLinks=new ArticleLink[20];
+            var i = 0;
+            List<ViewModel> listModels = new List<ViewModel>();
+            //ListModels listModels = new ListModels();
             var config = Configuration.Default.WithDefaultLoader();
-            var URL = "https://news.tut.by/?sort=time";
-            var document = await BrowsingContext.New(config).OpenAsync(URL);
+            var document = await BrowsingContext.New(config).OpenAsync(urls.TutBy);
             var Items = document.QuerySelectorAll("div.m-sorted");
             string parttext = "";
             if (Items != null)
@@ -81,89 +79,101 @@ namespace Parser.Controllers
                         if (blockContent != null)
                         {
                             var full = blockContent.QuerySelectorAll("p");
-                            int h = 0;
-                            string fulltext = "";
+                            var h = 0;
+                            var fulltext = "";
                             foreach (var text in full)
                             {
                                 if (h == 0) { parttext = text.Text(); h++; }
                                 fulltext += (text.Text() + "\n");
                             }
-                            articleLinks[i] = new ArticleLink { Article = article.Text(), Link= item_link[j].GetAttribute("href"),
-                                FullContent =fulltext,PartContent=GetContent(parttext)};
+                            listModels.Add(new ViewModel
+                            {
+                                Article = article.Text(),
+                                Link = item_link[j].GetAttribute("href"),
+                                FullContent =fulltext,
+                                PartContent =GetContent(parttext)
+                            });
                          i++;
-                            if (i == 20) { return articleLinks; }
+                            if (i == 20) { return listModels; }
                         }
                     }
                 }
             }
-            return articleLinks;
+            return listModels;
         }
+
         [HttpGet("[action]")]
-        public async Task<ArticleLink[]> GetTitleArticlesBelta()
+        public async Task<List<ViewModel>> GetTitlesBelta()
         {
-            ArticleLink[] articleLinks = new ArticleLink[20];
+            List<ViewModel> listModels = new List<ViewModel>();
+            //ListModels listModels = new ListModels();
             var config = Configuration.Default.WithDefaultLoader();
-            var URL = "https://www.belta.by/all_news/";
-            var document = await BrowsingContext.New(config).OpenAsync(URL);
-            var Items = document.QuerySelectorAll("div.lenta_info");
-            string partContent, link,imer;
+            var document = await BrowsingContext.New(config).OpenAsync(urls.Belta);
+            var items = document.QuerySelectorAll("div.lenta_info");
+            string partContent, link,content;
             for (int i=0;i<20;i++)
             {
                 //ссылка
-                link = Items[i].QuerySelector("a.lenta_info_title").GetAttribute("href");
+                link = items[i].QuerySelector("a.lenta_info_title").GetAttribute("href");
                 if (!link.Contains("https://www.belta.by"))
                 {
                     link = "https://www.belta.by" + link;
                 }
                 document = await BrowsingContext.New(config).OpenAsync(link);
                 //содеражание статьи
-                imer = document.QuerySelector("div.js-mediator-article").TextContent;
+                content = document.QuerySelector("div.js-mediator-article").TextContent;
                
                 try
                 {
                     //краткое описание
-                    Items[i].QuerySelector("div.lenta_textsmall").Text();
-                    partContent = Items[i].QuerySelector("div.lenta_textsmall").Text();
+                    items[i].QuerySelector("div.lenta_textsmall").Text();
+                    partContent = items[i].QuerySelector("div.lenta_textsmall").Text();
                 }
                 catch (System.ArgumentNullException)
                 {
-                    partContent = imer;
+                    partContent = content;
                 }
-                articleLinks[i] = new ArticleLink { Article = Items[i].QuerySelector("a.lenta_info_title").Text(), Link = link, FullContent = document.QuerySelector("div.js-mediator-article").TextContent, PartContent = GetContent(partContent) };
+                listModels.Add(new ViewModel
+                {
+                    Article = items[i].QuerySelector("a.lenta_info_title").Text(),
+                    Link = link,
+                    FullContent = document.QuerySelector("div.js-mediator-article").TextContent,
+                    PartContent = GetContent(partContent) });
             }
-            return articleLinks;
-        }
-        [HttpGet("[action]")]
-        public async Task<ArticleLink[][]> GetTitleArticlesSite()
-        {
-            int counter = 0;
-            ArticleLink[][] articleLinks = new ArticleLink[3][];
-            articleLinks[counter] = new ArticleLink[20];
-            articleLinks[counter] = await GetTitleArticlesHabr();
-            counter++;
-            articleLinks[counter] = new ArticleLink[20];
-            articleLinks[counter] = await GetTitleArticlesTutBy();
-            counter++;
-            articleLinks[counter] = new ArticleLink[20];
-            articleLinks[counter] = await GetTitleArticlesBelta();
-            return articleLinks;
+            return listModels;
         }
 
-    public class ArticleLink
+        [HttpGet("[action]")]
+        public async Task<List<List<ViewModel>>> GetTitles()
         {
-            public string Article { get; set; }
-            public string Link { get; set; }
-            public string FullContent { get; set; }
-            public string PartContent { get; set; }
+            List<List<ViewModel>> listModels = new List<List<ViewModel>>();
+            var model = await GetTitlesHabr();
+            listModels.Add(model);
+            model = await GetTitlesTutBy();
+            listModels.Add(model);
+            model = await GetTitlesBelta();
+            listModels.Add(model);
+            return listModels;
         }
-        public class ArticleLinkSite
+
+        public string GetContent(string Content)
         {
-            public ArticleLink[] articleLink { get; set; } = new ArticleLink[20];
-            public string Site { get; set; }
-            public ArticleLinkSite()
+            int count = 100;
+            string str;
+            if (Content.Length > 100)
             {
-                this.articleLink = new ArticleLink[20];
+                while (Content.Substring(count, 1) != " " && Content.Substring(count, 1) != ".")
+                {
+                    count++;
+                }
+
+                str = Content.Substring(0, count);
             }
+            else
+            {
+                str = Content;
+            }
+            return str;
         }
     }
 }
