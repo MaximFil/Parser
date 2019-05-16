@@ -12,6 +12,7 @@ using AngleSharp.Dom;
 using Parser.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using AngleSharp.Html.Parser;
 
 namespace Parser.Controllers
 {
@@ -30,25 +31,52 @@ namespace Parser.Controllers
 
         [HttpGet("[action]")]
         public async Task<List<ViewModel>> GetTitlesHabr()
-        {         
+        {
+            
             var i = 0;
             string сontent;
             //ListModels listModels = new ListModels();
             List<ViewModel> listModels = new List<ViewModel>();
             var config = Configuration.Default.WithDefaultLoader();
-            var document = await BrowsingContext.New(config).OpenAsync(urls.Habr);
+            var context = BrowsingContext.New(config);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            //1.7
+            var document = await context.OpenAsync(urls.Habr);
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            watch.Restart();
+            //0.033
             var items = document.QuerySelectorAll("a.post__title_link");
-            listModels = new List<ViewModel>();
+            elapsedMs = watch.ElapsedMilliseconds;
+           
+            
             foreach (var item in items)
             {
-                document = await BrowsingContext.New(config).OpenAsync(item.GetAttribute("href").ToString());
+                watch.Restart();
+                //0.002
+                var link = item.GetAttribute("href").ToString();
+                elapsedMs = watch.ElapsedMilliseconds;
+
+                watch.Restart();
+                //0.439
+                document = await context.OpenAsync(link);
+                elapsedMs = watch.ElapsedMilliseconds;
+                
+                watch.Restart();
+                //0.002
                 сontent = document.QuerySelector("div.post__text").TextContent.ToString();
+                elapsedMs = watch.ElapsedMilliseconds;
+
+                watch.Restart();
+                //0.001
                 listModels.Add(new ViewModel {
                     Article = item.Text(),
                     Link = item.GetAttribute("href"),
                     FullContent = сontent,
                     PartContent =GetContent(сontent)
                 });
+                elapsedMs = watch.ElapsedMilliseconds;
                 i++;
             }
             return listModels;
@@ -57,12 +85,20 @@ namespace Parser.Controllers
         [HttpGet("[action]")]
         public async Task<List<ViewModel>> GetTitlesTutBy()
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             var i = 0;
             List<ViewModel> listModels = new List<ViewModel>();
             //ListModels listModels = new ListModels();
             var config = Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync(urls.TutBy);
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            watch.Restart();
             var Items = document.QuerySelectorAll("div.m-sorted");
+            elapsedMs=watch.ElapsedMilliseconds;
+
             string parttext = "";
             if (Items != null)
             {
@@ -71,9 +107,12 @@ namespace Parser.Controllers
                     var item_link = Items[k].QuerySelectorAll("a.entry__link");
                     for (int j = 0; j<item_link.Length; j += +2)
                     {
+                        watch.Restart();
                         //переходит на статью по ссылке
                         document = await BrowsingContext.New(config).OpenAsync(item_link[j].GetAttribute("href").ToString());
                         //получает DOM объект в котором хранится заголовок
+                        elapsedMs = watch.ElapsedMilliseconds;
+                        watch.Restart();
                         var article = document.QuerySelector("h1");
                         var blockContent = document.QuerySelector("div.js-mediator-article");
                         if (blockContent != null)
@@ -96,6 +135,7 @@ namespace Parser.Controllers
                          i++;
                             if (i == 20) { return listModels; }
                         }
+                        elapsedMs = watch.ElapsedMilliseconds;
                     }
                 }
             }
@@ -121,8 +161,13 @@ namespace Parser.Controllers
                 }
                 document = await BrowsingContext.New(config).OpenAsync(link);
                 //содеражание статьи
+                try { 
                 content = document.QuerySelector("div.js-mediator-article").TextContent;
-               
+                }
+                catch(Exception ex)
+                {
+                    continue;
+                }
                 try
                 {
                     //краткое описание
@@ -147,12 +192,22 @@ namespace Parser.Controllers
         public async Task<List<List<ViewModel>>> GetTitles()
         {
             List<List<ViewModel>> listModels = new List<List<ViewModel>>();
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             var model = await GetTitlesHabr();
             listModels.Add(model);
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            watch.Restart();
             model = await GetTitlesTutBy();
             listModels.Add(model);
+            elapsedMs = watch.ElapsedMilliseconds;
+
+            watch.Restart();
             model = await GetTitlesBelta();
             listModels.Add(model);
+            elapsedMs = watch.ElapsedMilliseconds;
+
             return listModels;
         }
 
