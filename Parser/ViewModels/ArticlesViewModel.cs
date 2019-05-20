@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Parser.ViewModels
 {
-    public class ViewModel
+    public class ArticlesViewModel
     {
             public string Article { get; set; }
             public string Link { get; set; }

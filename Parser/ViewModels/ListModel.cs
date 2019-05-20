@@ -7,6 +7,6 @@ namespace Parser.ViewModels
 {
     public class ListModel
     {
-        public List<ViewModel> models = new List<ViewModel>();
+        public List<ArticlesViewModel> models = new List<ArticlesViewModel>();
     }
 }

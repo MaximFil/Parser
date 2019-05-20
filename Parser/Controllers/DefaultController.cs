@@ -30,13 +30,13 @@ namespace Parser.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<List<ViewModel>> GetTitlesHabr()
+        public async Task<List<ArticlesViewModel>> GetTitlesHabr()
         {
             
             var i = 0;
             string сontent;
             //ListModels listModels = new ListModels();
-            List<ViewModel> listModels = new List<ViewModel>();
+            List<ArticlesViewModel> listModels = new List<ArticlesViewModel>();
             var config = Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
             var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -70,7 +70,8 @@ namespace Parser.Controllers
 
                 watch.Restart();
                 //0.001
-                listModels.Add(new ViewModel {
+                listModels.Add(new ArticlesViewModel
+                {
                     Article = item.Text(),
                     Link = item.GetAttribute("href"),
                     FullContent = сontent,
@@ -83,11 +84,11 @@ namespace Parser.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<List<ViewModel>> GetTitlesTutBy()
+        public async Task<List<ArticlesViewModel>> GetTitlesTutBy()
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             var i = 0;
-            List<ViewModel> listModels = new List<ViewModel>();
+            List<ArticlesViewModel> listModels = new List<ArticlesViewModel>();
             //ListModels listModels = new ListModels();
             var config = Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync(urls.TutBy);
@@ -125,7 +126,7 @@ namespace Parser.Controllers
                                 if (h == 0) { parttext = text.Text(); h++; }
                                 fulltext += (text.Text() + "\n");
                             }
-                            listModels.Add(new ViewModel
+                            listModels.Add(new ArticlesViewModel
                             {
                                 Article = article.Text(),
                                 Link = item_link[j].GetAttribute("href"),
@@ -143,9 +144,9 @@ namespace Parser.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<List<ViewModel>> GetTitlesBelta()
+        public async Task<List<ArticlesViewModel>> GetTitlesBelta()
         {
-            List<ViewModel> listModels = new List<ViewModel>();
+            List<ArticlesViewModel> listModels = new List<ArticlesViewModel>();
             //ListModels listModels = new ListModels();
             var config = Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync(urls.Belta);
@@ -178,7 +179,7 @@ namespace Parser.Controllers
                 {
                     partContent = content;
                 }
-                listModels.Add(new ViewModel
+                listModels.Add(new ArticlesViewModel
                 {
                     Article = items[i].QuerySelector("a.lenta_info_title").Text(),
                     Link = link,
@@ -189,11 +190,11 @@ namespace Parser.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<List<List<ViewModel>>> GetTitles()
+        public async Task<List<List<ArticlesViewModel>>> GetTitles()
         {
-            List<List<ViewModel>> listModels = new List<List<ViewModel>>();
+            List<List<ArticlesViewModel>> listModels = new List<List<ArticlesViewModel>>();
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            var model = await GetTitlesHabr();
+            var model = await GetTitlesTutBy();
             listModels.Add(model);
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
@@ -207,7 +208,8 @@ namespace Parser.Controllers
             model = await GetTitlesBelta();
             listModels.Add(model);
             elapsedMs = watch.ElapsedMilliseconds;
-
+            int count1 = listModels.Count;
+            int count2 = listModels[1].Count;
             return listModels;
         }
 
