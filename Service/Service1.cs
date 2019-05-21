@@ -1,7 +1,10 @@
-﻿using Service.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Parser.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -45,20 +48,19 @@ namespace Service
         }
         public void Start()
         {
-
             display("\n" + DateTime.Now.ToString() + "BeginBegin");
-            using (ApplicationContext context = new ApplicationContext())
-            {
-                User user1 = new User { Name = "Maxim", Age = 18 };
-                context.Users.Add(user1);
-                context.SaveChanges();
-            }
+            try {
             while (enabled)
             {
                 display("\n" + DateTime.Now.ToString() + "StartStart");
                 System.Threading.Thread.Sleep(1000);
-                // Create();
+                    // Create();
+                    Context context = new Context();
                 display("\n" + DateTime.Now.ToString() + "EndEnd");
+            } }
+            catch(Exception ex)
+            {
+                display("\n" + DateTime.Now.ToString() + "Error:" + ex.Message);
             }
         }
         public void Stop()

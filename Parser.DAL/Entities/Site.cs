@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Parser.Models
+namespace Parser.DAL.Entities
 {
     public class Site
     {
@@ -11,6 +12,5 @@ namespace Parser.Models
         public string Name { get; set; }
         public string Domain { get; set; }
         public List<UserSite> UserSite { get; set; }
-
     }
 }

@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Parser.Models;
 
 namespace Parser
 {
@@ -23,9 +22,9 @@ namespace Parser
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<Context>();
-                    context.Database.Migrate();
-                    DefaultUser.InitializeUser(services);
+                    //var context = services.GetRequiredService<Context>();
+                    //context.Database.Migrate();
+                    //DefaultUser.InitializeUser(services);
                 }
                 catch(Exception ex)
                 {

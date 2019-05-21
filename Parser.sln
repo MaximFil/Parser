@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parser", "Parser\Parser.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{BDF5F9C1-3C58-4989-9736-223060F61F92}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.DAL", "Parser.DAL\Parser.DAL.csproj", "{EFFCF19E-537D-46F3-890C-5CB9C03D1414}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BDF5F9C1-3C58-4989-9736-223060F61F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDF5F9C1-3C58-4989-9736-223060F61F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDF5F9C1-3C58-4989-9736-223060F61F92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFFCF19E-537D-46F3-890C-5CB9C03D1414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFFCF19E-537D-46F3-890C-5CB9C03D1414}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFFCF19E-537D-46F3-890C-5CB9C03D1414}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFFCF19E-537D-46F3-890C-5CB9C03D1414}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Protocols;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-//using System.Data.Entity;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Parser.Models
+namespace Parser.DAL.Entities
 {
-    public class Context: DbContext
+    public class Context : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
@@ -17,7 +15,11 @@ namespace Parser.Models
         public Context(DbContextOptions<Context> options) : base(options)
         {
             Database.EnsureCreated();
-        }  
+        }
+        public Context() : base()
+        {
+            Database.EnsureCreated();
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserArticle>()
@@ -46,4 +48,3 @@ namespace Parser.Models
         }
     }
 }
- 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Parser.Models;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System.Threading;

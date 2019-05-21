@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Parser.Models
+namespace Parser.DAL.Entities
 {
     public class Article
     {
@@ -14,6 +15,5 @@ namespace Parser.Models
         public string PartContent { get; set; }
         public string Content { get; set; }
         public List<UserArticle> UserArticle { get; set; }
-
     }
 }

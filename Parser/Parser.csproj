@@ -33,21 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190422124951_initial.cs" />
-    <Compile Remove="Migrations\20190422124951_initial.Designer.cs" />
-    <Compile Remove="Migrations\20190422125236_initial.cs" />
-    <Compile Remove="Migrations\20190422125236_initial.Designer.cs" />
-    <Compile Remove="Migrations\20190422125408_initial.cs" />
-    <Compile Remove="Migrations\20190422125408_initial.Designer.cs" />
-    <Compile Remove="Migrations\20190422125616_initial.cs" />
-    <Compile Remove="Migrations\20190422125616_initial.Designer.cs" />
-    <Compile Remove="Migrations\20190422125646_Migr.cs" />
-    <Compile Remove="Migrations\20190422125646_Migr.Designer.cs" />
-    <Compile Remove="Migrations\20190422125839_rer.cs" />
-    <Compile Remove="Migrations\20190422125839_rer.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="ClientApp\src\app\ArticleLink.ts" />
     <None Remove="ClientApp\src\app\home\news.ts" />
     <None Remove="ClientApp\src\app\home\NewsTitle.ts" />
@@ -74,6 +59,11 @@
     <None Include="wwwroot\bootstrap.min.css.map" />
     <None Include="wwwroot\bootstrap.min.js" />
     <None Include="wwwroot\bootstrap.min.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Parser.DAL\Parser.DAL.csproj" />
+    <ProjectReference Include="..\Service\Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
