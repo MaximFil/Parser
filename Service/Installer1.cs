@@ -22,7 +22,7 @@ namespace Service
 
             processInstaller.Account = ServiceAccount.LocalSystem;
             serviceInstaller.StartType = ServiceStartMode.Automatic;
-            serviceInstaller.ServiceName = "ServiceParsing";
+            serviceInstaller.ServiceName = "ServiceParser";
             Installers.Add(processInstaller);
             Installers.Add(serviceInstaller);
         }
