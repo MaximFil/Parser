@@ -12,14 +12,14 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Service.Controllers;
+using Parser.DAL;
 
 namespace Service
 {
-    public partial class Service1 : ServiceBase
+    public partial class ParserService : ServiceBase
     {
         CrudArticles crudArticles;
-        public Service1()
+        public ParserService()
         {
             InitializeComponent();
             this.CanStop = true;
@@ -43,12 +43,12 @@ namespace Service
     class CrudArticles
     {
         static bool enabled;
-        private DbContextOptionsBuilder<Context> optionsBuilder;
+        private DbContextOptionsBuilder<ApplicationDbContext> optionsBuilder;
         private string connectionString;
         public CrudArticles()
         {
             enabled = true;
-            optionsBuilder = new DbContextOptionsBuilder<Context>();
+            optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             connectionString = ConfigurationManager.
                 ConnectionStrings["Context"].ConnectionString;
         }
@@ -68,7 +68,7 @@ namespace Service
                     display("\n" + DateTime.Now.ToString() + "Error" + ex.Message);
                 }
                 display("\n" + DateTime.Now.ToString() + "End");
-                Thread.Sleep(300000);
+                Thread.Sleep(100000);
             }
         }
         public void Stop()
@@ -79,31 +79,37 @@ namespace Service
         public async Task Create()
         {
             display("Метод креате начал работу");
-            Parse parse = new Parse();
+            ParseHelper parse = new ParseHelper();
             display("Метод креате начал сбор новостей");
-            var list = await parse.GetArticles();
+            var listArticles = await parse.GetArticles();
             display("Метод креате закончил сбор новостей");
-            List<Article> articles = new List<Article>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                for (int j = 0; j < list[i].listArticles.Count; j++)
-                {
-                    articles.Add(new Article
-                    {
-                        Url = list[i].listArticles[j].Link,
-                        Content = list[i].listArticles[j].FullContent,
-                        PartContent = list[i].listArticles[j].PartContent,
-                        Title = list[i].listArticles[j].Article,
-                        SiteId = 1
-                    });
-                    display(list[i].listArticles[j].Link + "   " + list[i].listArticles[j].FullContent + "    " + list[i].listArticles[j].PartContent + "     " + list[i].listArticles[j].Article);
-                }
-            }
             display("Метод креате начинает запись в бд статей");
+            bool check = false;          
             optionsBuilder.UseSqlServer(connectionString);
-            using (Context context = new Context(optionsBuilder.Options))
+            using (ApplicationDbContext context = new ApplicationDbContext(optionsBuilder.Options))
             {
-                await context.Articles.AddRangeAsync(articles);
+                var articles = context.Articles.ToList();
+                if (articles.Count != 0)
+                {
+                    foreach (var listArticle in listArticles)
+                    {
+                        check = false;
+                        foreach (var article in articles)
+                        {
+                            if (article.Url == listArticle.Url)
+                            {
+                                check = false;
+                                break;
+                            }
+                            else { check = true; }
+                        }
+                        if (check)
+                        {
+                            await context.Articles.AddAsync(listArticle);
+                        }
+                    }
+                }
+                else { await context.AddRangeAsync(listArticles);}                                                    
                 await context.SaveChangesAsync();
             }
             display("Метод креате закончил запись статей в бд");

@@ -1,6 +1,6 @@
 ﻿namespace Service
 {
-    partial class Installer1
+    partial class InstallerParserService
     {
         /// <summary>
         /// Обязательная переменная конструктора.

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Parser.DAL;
+using Parser.DAL.Entities;
 
 namespace Parser
 {
@@ -11,7 +13,7 @@ namespace Parser
     {
         //public static void InitializeUser(IServiceProvider serviceProvider)
         //{
-        //    using (var context = new Context(serviceProvider.GetRequiredService<DbContextOptions<Context>>()))
+        //    using (var context = new ApplicationDbContext(serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
         //    {
         //        if (!context.Users.Any())
         //        {

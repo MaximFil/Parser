@@ -11,6 +11,6 @@ namespace Parser.DAL.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Domain { get; set; }
-        public List<UserSite> UserSite { get; set; }
+        public List<UserSite> UserSites { get; set; }
     }
 }

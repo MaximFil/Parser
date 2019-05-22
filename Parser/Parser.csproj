@@ -62,7 +62,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Parser.DAL\Parser.DAL.csproj" />
-    <ProjectReference Include="..\Service\Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

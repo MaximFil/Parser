@@ -21,7 +21,7 @@ namespace Service
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new Service1()
+                new ParserService()
             };
             ServiceBase.Run(ServicesToRun);
         }

@@ -13,7 +13,7 @@ namespace Parser.DAL.Entities
         public string LastName { get; set; }
         public DateTime DateSetting { get; set; }
         public byte ViewSetting { get; set; }
-        public List<UserArticle> UserArticle { get; set; }
-        public List<UserSite> UserSite { get; set; }
+        public List<UserArticle> UserArticles { get; set; }
+        public List<UserSite> UserSites { get; set; }
     }
 }

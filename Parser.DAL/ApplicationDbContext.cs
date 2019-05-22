@@ -4,22 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Parser.DAL.Entities;
 
-namespace Parser.DAL.Entities
+namespace Parser.DAL
 {
-    public class Context : DbContext
+    public class ApplicationDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Site> Sites { get; set; }
-        public Context(DbContextOptions<Context> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            Database.EnsureCreated();
+           // Database.EnsureCreated();
         }
-        public Context() : base()
-        {
-            Database.EnsureCreated();
-        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserArticle>()
@@ -27,23 +25,24 @@ namespace Parser.DAL.Entities
 
             modelBuilder.Entity<UserArticle>()
                 .HasOne(sc => sc.User)
-                .WithMany(s => s.UserArticle)
+                .WithMany(s => s.UserArticles)
                 .HasForeignKey(sc => sc.UserId);
 
             modelBuilder.Entity<UserArticle>()
                 .HasOne(sc => sc.Article)
-                .WithMany(c => c.UserArticle)
+
+                .WithMany(c => c.UserArticles)
                 .HasForeignKey(sc => sc.ArticleId);
 
             modelBuilder.Entity<UserSite>()
                 .HasKey(t => new { t.UserId, t.SiteId });
 
             modelBuilder.Entity<UserSite>().HasOne(sc => sc.User)
-                .WithMany(c => c.UserSite)
+                .WithMany(c => c.UserSites)
                 .HasForeignKey(sc => sc.UserId);
 
             modelBuilder.Entity<UserSite>().HasOne(sc => sc.Site)
-                .WithMany(c => c.UserSite)
+                .WithMany(c => c.UserSites)
                 .HasForeignKey(sc => sc.SiteId);
         }
     }

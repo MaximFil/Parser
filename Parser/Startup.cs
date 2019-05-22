@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Parser.Controllers;
 using Parser.ViewModels;
 using Parser.DAL.Entities;
+using Parser.DAL;
 
 namespace Parser
 {
@@ -24,8 +25,7 @@ namespace Parser
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.Configure<URLs>(Configuration.GetSection("urls"));
-            services.AddDbContext<Context>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ParserDB")));
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

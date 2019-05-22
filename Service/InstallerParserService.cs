@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 namespace Service
 {
     [RunInstaller(true)]
-    public partial class Installer1 : System.Configuration.Install.Installer
+    public partial class InstallerParserService : System.Configuration.Install.Installer
     {
         ServiceInstaller serviceInstaller;
         ServiceProcessInstaller processInstaller;
-        public Installer1()
+        public InstallerParserService()
         {
             InitializeComponent();
             serviceInstaller = new ServiceInstaller();
@@ -22,7 +22,7 @@ namespace Service
 
             processInstaller.Account = ServiceAccount.LocalSystem;
             serviceInstaller.StartType = ServiceStartMode.Automatic;
-            serviceInstaller.ServiceName = "ServiceParser";
+            serviceInstaller.ServiceName = "ParserService";
             Installers.Add(processInstaller);
             Installers.Add(serviceInstaller);
         }

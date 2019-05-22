@@ -5,18 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Parser.DAL.ViewModels;
+using Parser.DAL.Entities;
+using Parser;
 
-namespace Service.Controllers
+namespace Service
 {
-    public class Parse
+    public class ParseHelper
     {
-        public async Task<ListArticlesViewModel> GetTitlesHabr()
+        public async Task<List<Article>> GetTitlesHabr()
         {
-            int i = 0;
             string сontent;
-            ListArticlesViewModel listModels = new ListArticlesViewModel();
-            listModels.listArticles = new List<ArticlesViewModel>();
+            List<Article> articles = new List<Article>();
             var config = Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
             var document = await context.OpenAsync("https://habr.com/ru/news/");
@@ -26,31 +25,27 @@ namespace Service.Controllers
                 var link = item.GetAttribute("href").ToString();
                 document = await context.OpenAsync(link);
                 сontent = document.QuerySelector("div.post__text").TextContent.ToString();
-                try { 
-                listModels.listArticles.Add(new ArticlesViewModel
-                {
-                    Article = item.Text(),
-                    Link = item.GetAttribute("href"),
-                    FullContent = сontent,
-                    PartContent = GetContent(сontent)
-                });
+                try {
+                    articles.Add(new Article
+                    {
+                        Title = item.Text(),
+                        Url = item.GetAttribute("href"),
+                        PartContent = GetContent(сontent),
+                        Content = сontent
+                    });
                 }
                 catch (Exception ex)
                 {
                     display(ex.Message);
-                }
-               
-                i++;
+                }             
             }
-            return listModels;
+            return articles;           
         }
 
-        public async Task<ListArticlesViewModel> GetTitlesTutBy()
+        public async Task<List<Article>> GetTitlesTutBy()
         {
             var i = 0;
-            ListArticlesViewModel listModels = new ListArticlesViewModel();
-            listModels.listArticles = new List<ArticlesViewModel>();
-            //ListModels listModels = new ListModels();
+            List<Article> articles = new List<Article>();
             var config = Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync("https://news.tut.by/?sort=time");
             var Items = document.QuerySelectorAll("div.m-sorted");
@@ -62,11 +57,7 @@ namespace Service.Controllers
                     var item_link = Items[k].QuerySelectorAll("a.entry__link");
                     for (int j = 0; j < item_link.Length; j += +2)
                     {
-
-                        //переходит на статью по ссылке
                         document = await BrowsingContext.New(config).OpenAsync(item_link[j].GetAttribute("href").ToString());
-                        //получает DOM объект в котором хранится заголовок
-
                         var article = document.QuerySelector("h1");
                         var blockContent = document.QuerySelector("div.js-mediator-article");
                         if (blockContent != null)
@@ -81,12 +72,12 @@ namespace Service.Controllers
                             }
                             try
                             {
-                                listModels.listArticles.Add(new ArticlesViewModel
+                                articles.Add(new Article
                                 {
-                                    Article = article.Text(),
-                                    Link = item_link[j].GetAttribute("href"),
-                                    FullContent = fulltext,
-                                    PartContent = GetContent(parttext)
+                                    Title = article.Text(),
+                                    PartContent = GetContent(parttext),
+                                    Url = item_link[j].GetAttribute("href"),
+                                    Content = fulltext
                                 });
                             }
                             catch (Exception ex)
@@ -94,33 +85,29 @@ namespace Service.Controllers
                                 display(ex.Message);
                             }
                             i++;
-                            if (i == 20) { return listModels; }
+                            if (i == 20) { return articles; }
                         }
                     }
                 }
             }
-            return listModels;
+            return articles;
         }
 
-        public async Task<ListArticlesViewModel> GetTitlesBelta()
+        public async Task<List<Article>> GetTitlesBelta()
         {
-            ListArticlesViewModel listModels = new ListArticlesViewModel();
-            listModels.listArticles = new List<ArticlesViewModel>();
-            //ListModels listModels = new ListModels();
+            List<Article> articles = new List<Article>();
             var config = Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync("https://www.belta.by/all_news/");
             var items = document.QuerySelectorAll("div.lenta_info");
             string partContent, link, content;
             for (int i = 0; i < 20; i++)
             {
-                //ссылка
                 link = items[i].QuerySelector("a.lenta_info_title").GetAttribute("href");
                 if (!link.Contains("https://www.belta.by"))
                 {
                     link = "https://www.belta.by" + link;
                 }
                 document = await BrowsingContext.New(config).OpenAsync(link);
-                //содеражание статьи
                 try
                 {
                     content = document.QuerySelector("div.js-mediator-article").TextContent;
@@ -131,7 +118,6 @@ namespace Service.Controllers
                 }
                 try
                 {
-                    //краткое описание
                     items[i].QuerySelector("div.lenta_textsmall").Text();
                     partContent = items[i].QuerySelector("div.lenta_textsmall").Text();
                 }
@@ -139,31 +125,35 @@ namespace Service.Controllers
                 {
                     partContent = content;
                 }
-                try { 
-                listModels.listArticles.Add(new ArticlesViewModel
-                {
-                    Article = items[i].QuerySelector("a.lenta_info_title").Text(),
-                    Link = link,
-                    FullContent = document.QuerySelector("div.js-mediator-article").TextContent,
-                    PartContent = GetContent(partContent)
-                });
+                try {
+                    articles.Add(new Article
+                    {
+                        Title = items[i].QuerySelector("a.lenta_info_title").Text(),
+                        Url = link,
+                        PartContent = GetContent(partContent),
+                        Content = document.QuerySelector("div.js-mediator-article").TextContent
+                    });
                 }
                 catch (Exception ex)
                 {
                     display(ex.Message);
                 }
-            }
-            return listModels;
+            } 
+            return articles;
         }
-        public async Task<List<ListArticlesViewModel>> GetArticles()
+        public async Task<List<Article>> GetArticles()
         {
-            List<ListArticlesViewModel> listArticles = new List<ListArticlesViewModel>();
+            List<Article> listArticles = new List<Article>();
             var model = await GetTitlesHabr();
-            listArticles.Add(model);
+            listArticles.AddRange(model);
             model = await GetTitlesTutBy();
-            listArticles.Add(model);
+            listArticles.AddRange(model);
             model = await GetTitlesBelta();
-            listArticles.Add(model);
+            listArticles.AddRange(model);
+            for(int i = 0; i < listArticles.Count; i++)
+            {
+                display(listArticles.ElementAt(i).ToString());
+            }
             return listArticles;
         }
         private string GetContent(string Content)

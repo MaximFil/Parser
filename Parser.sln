@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28809.33
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parser", "Parser\Parser.csproj", "{8B8A38C8-D1D8-4BB8-979E-700E46F7E279}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{BDF5F9C1-3C58-4989-9736-223060F61F92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserService", "Service\ParserService.csproj", "{BDF5F9C1-3C58-4989-9736-223060F61F92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.DAL", "Parser.DAL\Parser.DAL.csproj", "{EFFCF19E-537D-46F3-890C-5CB9C03D1414}"
 EndProject

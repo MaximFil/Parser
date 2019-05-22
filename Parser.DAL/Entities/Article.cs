@@ -14,6 +14,6 @@ namespace Parser.DAL.Entities
         public string Title { get; set; }
         public string PartContent { get; set; }
         public string Content { get; set; }
-        public List<UserArticle> UserArticle { get; set; }
+        public List<UserArticle> UserArticles { get; set; }
     }
 }
