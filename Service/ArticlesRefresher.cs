@@ -18,9 +18,9 @@ namespace Service
         private readonly string _connectionString;
         private readonly DbContextOptions<ApplicationDbContext> _options;
         private readonly string _file;
+
         public ArticlesRefresher()
-        {
-            
+        {            
             enabled = true;
             _dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             _connectionString = ConfigurationManager.
@@ -48,6 +48,7 @@ namespace Service
                 Thread.Sleep(interval);
             }
         }
+
         public void Stop()
         {
             enabled = false;
@@ -56,10 +57,10 @@ namespace Service
         public async Task Create()
         {
             display("Method Create begin working");
-            var parse = new ParserHelper();
-            display("Method Create begin pars articles");
-            var articles = await parse.GetArticles();
-            display("Method Create finish pars articles");
+            var parserHelper = new ParserHelper();
+            display("Method Create begin parsing articles");
+            var articles = await parserHelper.GetArticles();
+            display("Method Create finish parsing articles");
             display("Method Create begin refresh articles in database");
             using (var context = new ApplicationDbContext(_options))
             {

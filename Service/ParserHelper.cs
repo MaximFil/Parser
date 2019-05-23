@@ -3,30 +3,36 @@ using AngleSharp.Dom;
 using AngleSharp;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Parser.DAL.Entities;
-using Parser;
 using System.Configuration;
 
 namespace Service
 {
     public class ParserHelper
     {
-        private readonly string[] _sites;
+        private readonly string _urlHabr;
+        private readonly string _urlTutBy;
+        private readonly string _urlBelta;
         private readonly string _file;
+        private readonly string _domainBelta;
+
         public ParserHelper()
         {
-            _sites = ConfigurationManager.AppSettings["Sites"].Split(' ');
+            _urlHabr = ConfigurationManager.AppSettings["UrlHabr"];
+            _urlTutBy = ConfigurationManager.AppSettings["UrlTutBy"];
+            _urlBelta = ConfigurationManager.AppSettings["UrlBelta"];
+            _domainBelta = ConfigurationManager.AppSettings["DomainBelta"];
             _file = ConfigurationManager.AppSettings["ParsingFile"];
         }
+
         public async Task<List<Article>> GetHabrArticles()
         {
             string сontent;
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
-            var document = await context.OpenAsync(_sites[0]);
+            var document = await context.OpenAsync(_urlHabr);
             var items = document.QuerySelectorAll("a.post__title_link");
             foreach (var item in items)
             {
@@ -38,7 +44,7 @@ namespace Service
                     {
                         Title = item.Text(),
                         Url = item.GetAttribute("href"),
-                        PartContent = GetContent(сontent),
+                        PartContent = GetShortenedArticleDescription(сontent),
                         Content = сontent
                     });
                 }
@@ -54,14 +60,14 @@ namespace Service
         {
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
-            var document = await BrowsingContext.New(config).OpenAsync(_sites[1]);
-            var Items = document.QuerySelectorAll("div.m-sorted");
+            var document = await BrowsingContext.New(config).OpenAsync(_urlTutBy);
+            var items = document.QuerySelectorAll("div.m-sorted");
             var parttext = "";
-            if (Items != null)
+            if (items != null)
             {
-                for (int k = 0; k < Items.Length; k++)
+                for (int k = 0; k < items.Length; k++)
                 {
-                    var item_link = Items[k].QuerySelectorAll("a.entry__link");
+                    var item_link = items[k].QuerySelectorAll("a.entry__link");
                     for (int j = 0; j < item_link.Length; j += +2)
                     {
                         document = await BrowsingContext.New(config).OpenAsync(item_link[j].GetAttribute("href").ToString());
@@ -82,7 +88,7 @@ namespace Service
                                 articles.Add(new Article
                                 {
                                     Title = article.Text(),
-                                    PartContent = GetContent(parttext),
+                                    PartContent = GetShortenedArticleDescription(parttext),
                                     Url = item_link[j].GetAttribute("href"),
                                     Content = fulltext
                                 });
@@ -102,15 +108,16 @@ namespace Service
         {
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
-            var document = await BrowsingContext.New(config).OpenAsync(_sites[2]);
+            var document = await BrowsingContext.New(config).OpenAsync(_urlBelta);
             var items = document.QuerySelectorAll("div.lenta_info");
+            display("Get DOM object");
             string partContent, link, content;
             foreach (var item in items)
             {
                 link = item.QuerySelector("a.lenta_info_title").GetAttribute("href");
-                if (!link.Contains("https://www.belta.by"))
+                if (!link.Contains(_domainBelta))
                 {
-                    link = "https://www.belta.by" + link;
+                    link = _domainBelta + link;
                 }
                 document = await BrowsingContext.New(config).OpenAsync(link);
                 try
@@ -119,6 +126,7 @@ namespace Service
                 }
                 catch (Exception ex)
                 {
+                    display(ex.Message);
                     continue;
                 }
                 try
@@ -130,12 +138,13 @@ namespace Service
                 {
                     partContent = content;
                 }
-                try {
+                try
+                {
                     articles.Add(new Article
                     {
                         Title = item.QuerySelector("a.lenta_info_title").Text(),
                         Url = link,
-                        PartContent = GetContent(partContent),
+                        PartContent = GetShortenedArticleDescription(partContent),
                         Content = document.QuerySelector("div.js-mediator-article").TextContent
                     });
                 }
@@ -143,51 +152,55 @@ namespace Service
                 {
                     display(ex.Message);
                 }
+                display(link);
             } 
             return articles;
         }
+
         public async Task<List<Article>> GetArticles()
         {
             display("Begin");
-            var listArticles = new List<Article>();
-            display("Begin habr pars");
+            var articles = new List<Article>();
+            display("Begin habr parsing");
             var model = await GetHabrArticles();
-            display("Finish habr pars");
-            listArticles.AddRange(model);
-            display("Begin TutBy pars");
+            display("Finish habr parsing");
+            articles.AddRange(model);
+            display("Begin TutBy parsing");
             model = await GetTutByArticles();
-            display("Finish TutBy pars");
-            listArticles.AddRange(model);
-            display("Begin belta pars");
+            display("Finish TutBy parsing");
+            articles.AddRange(model);
+            display("Begin belta parsing");
             model = await GetBeltaArticles();
-            display("Finish belta pars");
-            listArticles.AddRange(model);
-            for(int i = 0; i < listArticles.Count; i++)
+            display("Finish belta parsing");
+            articles.AddRange(model);
+            for(int i = 0; i < articles.Count; i++)
             {
-                display(listArticles.ElementAt(i).ToString());
+                display(articles.ElementAt(i).ToString());
             }
-            display("Collected all articles");
-            return listArticles;
+            display("All articles are collected");
+            return articles;
         }
-        private string GetContent(string Content)
+
+        private string GetShortenedArticleDescription(string сontent)
         {
             var count = 100;
             string str;
-            if (Content.Length > 100)
+            if (сontent.Length > 100)
             {
-                while (Content.Substring(count, 1) != " " && Content.Substring(count, 1) != ".")
+                while (сontent.Substring(count, 1) != " " && сontent.Substring(count, 1) != ".")
                 {
                     count++;
                 }
 
-                str = Content.Substring(0, count);
+                str = сontent.Substring(0, count);
             }
             else
             {
-                str = Content;
+                str = сontent;
             }
             return str;
         }
+
         private void display(string str)
         {
             System.IO.StreamWriter writer = new System.IO.StreamWriter(_file, true);
