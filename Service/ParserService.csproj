@@ -287,7 +287,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ParseHelper.cs" />
+    <Compile Include="ArticlesRefresher.cs" />
+    <Compile Include="ParserHelper.cs" />
     <Compile Include="InstallerParserService.cs">
       <SubType>Component</SubType>
     </Compile>

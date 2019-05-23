@@ -7,18 +7,26 @@ using System.Text;
 using System.Threading.Tasks;
 using Parser.DAL.Entities;
 using Parser;
+using System.Configuration;
 
 namespace Service
 {
-    public class ParseHelper
+    public class ParserHelper
     {
-        public async Task<List<Article>> GetTitlesHabr()
+        private readonly string[] _sites;
+        private readonly string _file;
+        public ParserHelper()
+        {
+            _sites = ConfigurationManager.AppSettings["Sites"].Split(' ');
+            _file = ConfigurationManager.AppSettings["ParsingFile"];
+        }
+        public async Task<List<Article>> GetHabrArticles()
         {
             string сontent;
-            List<Article> articles = new List<Article>();
-            var config = Configuration.Default.WithDefaultLoader();
+            var articles = new List<Article>();
+            var config = AngleSharp.Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
-            var document = await context.OpenAsync("https://habr.com/ru/news/");
+            var document = await context.OpenAsync(_sites[0]);
             var items = document.QuerySelectorAll("a.post__title_link");
             foreach (var item in items)
             {
@@ -42,14 +50,13 @@ namespace Service
             return articles;           
         }
 
-        public async Task<List<Article>> GetTitlesTutBy()
+        public async Task<List<Article>> GetTutByArticles()
         {
-            var i = 0;
-            List<Article> articles = new List<Article>();
-            var config = Configuration.Default.WithDefaultLoader();
-            var document = await BrowsingContext.New(config).OpenAsync("https://news.tut.by/?sort=time");
+            var articles = new List<Article>();
+            var config = AngleSharp.Configuration.Default.WithDefaultLoader();
+            var document = await BrowsingContext.New(config).OpenAsync(_sites[1]);
             var Items = document.QuerySelectorAll("div.m-sorted");
-            string parttext = "";
+            var parttext = "";
             if (Items != null)
             {
                 for (int k = 0; k < Items.Length; k++)
@@ -84,8 +91,6 @@ namespace Service
                             {
                                 display(ex.Message);
                             }
-                            i++;
-                            if (i == 20) { return articles; }
                         }
                     }
                 }
@@ -93,16 +98,16 @@ namespace Service
             return articles;
         }
 
-        public async Task<List<Article>> GetTitlesBelta()
+        public async Task<List<Article>> GetBeltaArticles()
         {
-            List<Article> articles = new List<Article>();
-            var config = Configuration.Default.WithDefaultLoader();
-            var document = await BrowsingContext.New(config).OpenAsync("https://www.belta.by/all_news/");
+            var articles = new List<Article>();
+            var config = AngleSharp.Configuration.Default.WithDefaultLoader();
+            var document = await BrowsingContext.New(config).OpenAsync(_sites[2]);
             var items = document.QuerySelectorAll("div.lenta_info");
             string partContent, link, content;
-            for (int i = 0; i < 20; i++)
+            foreach (var item in items)
             {
-                link = items[i].QuerySelector("a.lenta_info_title").GetAttribute("href");
+                link = item.QuerySelector("a.lenta_info_title").GetAttribute("href");
                 if (!link.Contains("https://www.belta.by"))
                 {
                     link = "https://www.belta.by" + link;
@@ -118,8 +123,8 @@ namespace Service
                 }
                 try
                 {
-                    items[i].QuerySelector("div.lenta_textsmall").Text();
-                    partContent = items[i].QuerySelector("div.lenta_textsmall").Text();
+                    item.QuerySelector("div.lenta_textsmall").Text();
+                    partContent = item.QuerySelector("div.lenta_textsmall").Text();
                 }
                 catch (System.ArgumentNullException)
                 {
@@ -128,7 +133,7 @@ namespace Service
                 try {
                     articles.Add(new Article
                     {
-                        Title = items[i].QuerySelector("a.lenta_info_title").Text(),
+                        Title = item.QuerySelector("a.lenta_info_title").Text(),
                         Url = link,
                         PartContent = GetContent(partContent),
                         Content = document.QuerySelector("div.js-mediator-article").TextContent
@@ -143,22 +148,30 @@ namespace Service
         }
         public async Task<List<Article>> GetArticles()
         {
-            List<Article> listArticles = new List<Article>();
-            var model = await GetTitlesHabr();
+            display("Begin");
+            var listArticles = new List<Article>();
+            display("Begin habr pars");
+            var model = await GetHabrArticles();
+            display("Finish habr pars");
             listArticles.AddRange(model);
-            model = await GetTitlesTutBy();
+            display("Begin TutBy pars");
+            model = await GetTutByArticles();
+            display("Finish TutBy pars");
             listArticles.AddRange(model);
-            model = await GetTitlesBelta();
+            display("Begin belta pars");
+            model = await GetBeltaArticles();
+            display("Finish belta pars");
             listArticles.AddRange(model);
             for(int i = 0; i < listArticles.Count; i++)
             {
                 display(listArticles.ElementAt(i).ToString());
             }
+            display("Collected all articles");
             return listArticles;
         }
         private string GetContent(string Content)
         {
-            int count = 100;
+            var count = 100;
             string str;
             if (Content.Length > 100)
             {
@@ -177,7 +190,7 @@ namespace Service
         }
         private void display(string str)
         {
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(@"D:\Text.txt", true);
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(_file, true);
             writer.WriteLine("\n" + DateTime.Now.ToString() + str);
             writer.Close();
         }

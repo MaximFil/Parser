@@ -7,6 +7,6 @@ namespace Parser.ViewModels
 {
     public class ListArticlesViewModel
     {
-        public List<ArticlesViewModel> listArticles { get; set; }
+        public List<ArticlesViewModel> articles { get; set; }
     }
 }
