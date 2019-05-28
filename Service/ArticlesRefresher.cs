@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Parser.DAL;
+using Parser.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -64,6 +65,7 @@ namespace Service
             display("Method Create begin refresh articles in database");
             using (var context = new ApplicationDbContext(_options))
             {
+                var sites = context.Sites.ToList();
                 foreach (var article in articles)
                 {
                     var dbArticle = context.Articles.FirstOrDefault(a => a.Url == article.Url);

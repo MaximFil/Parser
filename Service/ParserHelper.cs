@@ -43,6 +43,7 @@ namespace Service
                     articles.Add(new Article
                     {
                         Title = item.Text(),
+                        SiteId=1,
                         Url = item.GetAttribute("href"),
                         PartContent = GetShortenedArticleDescription(сontent),
                         Content = сontent
@@ -88,6 +89,7 @@ namespace Service
                                 articles.Add(new Article
                                 {
                                     Title = article.Text(),
+                                    SiteId=2,
                                     PartContent = GetShortenedArticleDescription(parttext),
                                     Url = item_link[j].GetAttribute("href"),
                                     Content = fulltext
@@ -143,10 +145,11 @@ namespace Service
                     articles.Add(new Article
                     {
                         Title = item.QuerySelector("a.lenta_info_title").Text(),
+                        SiteId = 3,
                         Url = link,
                         PartContent = GetShortenedArticleDescription(partContent),
                         Content = document.QuerySelector("div.js-mediator-article").TextContent
-                    });
+                    }) ;
                 }
                 catch (Exception ex)
                 {

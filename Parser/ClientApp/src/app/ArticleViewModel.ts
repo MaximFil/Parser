@@ -1,5 +1,5 @@
-export class News {
-  article: string;
+export class ArticleViewModel {
+  title: string;
   link: string;
   fullContent: string;
   partContent: string;

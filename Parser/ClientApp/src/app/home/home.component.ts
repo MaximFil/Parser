@@ -1,12 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ArticleService } from '../service/article.service';
-import { News } from '../news';
+import { ArticleViewModel } from '../ArticleViewModel';
 import { MatProgressSpinner } from '@angular/material';
 import { Observable, of } from 'rxjs';
 import { finalize, catchError } from 'rxjs/operators';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalComponent } from '../modal/modal.component';
-import { NewsTitle } from '../NewsTitle';
+import { SiteViewModel } from '../SiteViewModel';
+import { error } from '@angular/compiler/src/util';
+import { log } from 'util';
+import { Title } from '@angular/platform-browser';
+import { Content } from '@angular/compiler/src/render3/r3_ast';
 
 @Component({
   selector: 'app-home',
@@ -14,49 +18,32 @@ import { NewsTitle } from '../NewsTitle';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  ArticlesLinksAll: News[][];
-  ArticlesLinksPart: News[][];
-  Articles: Array<News>;
+  siteArticles: Array<SiteViewModel>;
   isLoading: boolean = false;
   countAllNews: number;
-  countPartNews: number[]=[];
   constructor(private ArticleService: ArticleService, private modalService: NgbModal) {
-    this.ArticlesLinksAll = [];
-    this.ArticlesLinksPart = [];
+    this.siteArticles = [];
   }
 
   ngOnInit() {
-    this.getNews();
+    this.getNews(3);
   }
 
-  getNews(): void {
-    this.ArticleService.getNews()
+  getNews(numberPage: number): void {
+    this.ArticleService.getNews(numberPage)
       .pipe(catchError(error => {
         console.log('error occured:', error);
         throw error;
       })
         , finalize(() => {
-          this.countAllNews = this.ArticlesLinksAll.length;
-          this.getPartNews();
+          this.countAllNews = this.siteArticles.length;
           this.isLoading = true;
         }))
-      .subscribe(ArticlesLinks => (this.ArticlesLinksAll = ArticlesLinks));
-
-  }
-
-  getPartNews(): void {
-    for (var i = 0; i < this.countAllNews; i++) {
-      this.ArticlesLinksPart[i] = this.ArticlesLinksAll[i].slice(0, 9);
-      this.countPartNews[i] = 0;
-      //this.countPartNews++;
-    }
-  }
-  getPartNewsStill(number: number): void {
-    this.ArticlesLinksPart[number] = this.ArticlesLinksAll[number].slice(0, 9 * (++this.countPartNews[number] + 1));
+      .subscribe(ArticlesLinks => (this.siteArticles = ArticlesLinks));
   }
   open(Article: any) {
     const modalRef = this.modalService.open(ModalComponent);
-    modalRef.componentInstance.article = Article.article;
+    modalRef.componentInstance.title = Article.title;
     modalRef.componentInstance.content = Article.fullContent;
   }
 }

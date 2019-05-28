@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Parser.DAL;
+using Parser.Controllers;
 
 namespace Parser
 {
@@ -22,11 +24,11 @@ namespace Parser
                 var services = scope.ServiceProvider;
                 try
                 {
-                    //var context = services.GetRequiredService<Context>();
-                    //context.Database.Migrate();
-                    //DefaultUser.InitializeUser(services);
+                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    context.Database.Migrate();
+                    DefaultUser.InitializeUser(services);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred seeding the DB.");

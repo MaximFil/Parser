@@ -15,7 +15,7 @@ namespace Parser.DAL
         public DbSet<Site> Sites { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-           // Database.EnsureCreated();
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

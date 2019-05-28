@@ -1,9 +1,9 @@
-import { News } from '../news';
+import { ArticleViewModel } from '../ArticleViewModel';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs';
-import { NewsTitle } from '../NewsTitle';
+import { SiteViewModel } from '../SiteViewModel';
 @Injectable({
     providedIn: 'root',
 })
@@ -11,8 +11,8 @@ import { NewsTitle } from '../NewsTitle';
     providers: [Http]
 })
 export class ArticleService {
-    constructor(private http: HttpClient) { }
-  getNews(): Observable<News[][]> {
-    return this.http.get<News[][]>('https://localhost:44398/api/Default/GetTitles');
+  constructor(private http: HttpClient) { }
+  getNews(numberSite: number): Observable<Array<SiteViewModel>> {
+    return this.http.get<Array<SiteViewModel>>('https://localhost:44398/api/Parser/GetSites?numberPart=' + numberSite);
     }
 }

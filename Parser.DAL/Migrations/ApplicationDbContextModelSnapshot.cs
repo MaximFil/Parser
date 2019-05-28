@@ -37,6 +37,8 @@ namespace Parser.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SiteId");
+
                     b.ToTable("Articles");
                 });
 
@@ -100,6 +102,14 @@ namespace Parser.DAL.Migrations
                     b.HasIndex("SiteId");
 
                     b.ToTable("UserSite");
+                });
+
+            modelBuilder.Entity("Parser.DAL.Entities.Article", b =>
+                {
+                    b.HasOne("Parser.DAL.Entities.Site", "Site")
+                        .WithMany("Articles")
+                        .HasForeignKey("SiteId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Parser.DAL.Entities.UserArticle", b =>

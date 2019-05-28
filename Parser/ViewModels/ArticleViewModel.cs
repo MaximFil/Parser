@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Parser.ViewModels
 {
-    public class ArticlesViewModel
+    public class ArticleViewModel
     {
-            public string Article { get; set; }
+            public string Title { get; set; }
             public string Link { get; set; }
             public string FullContent { get; set; }
             public string PartContent { get; set; }
