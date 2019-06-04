@@ -15,5 +15,10 @@ namespace Parser.DAL.Entities
         public byte ViewSetting { get; set; }
         public List<UserArticle> UserArticles { get; set; }
         public List<UserSite> UserSites { get; set; }
+        public User()
+        {
+            UserArticles = new List<UserArticle>();
+            UserSites = new List<UserSite>();
+        }
     }
 }

@@ -1,4 +1,4 @@
-export class ArticleViewModel {
+export class Article {
   title: string;
   link: string;
   fullContent: string;

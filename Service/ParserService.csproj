@@ -288,6 +288,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArticlesRefresher.cs" />
+    <Compile Include="DefaultSites.cs" />
     <Compile Include="ParserHelper.cs" />
     <Compile Include="InstallerParserService.cs">
       <SubType>Component</SubType>

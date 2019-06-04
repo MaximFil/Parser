@@ -1,9 +1,10 @@
-import { ArticleViewModel } from '../ArticleViewModel';
+import { Article } from '../Article';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Component } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs';
-import { SiteViewModel } from '../SiteViewModel';
+import { Site } from '../Site';
+import { NameSite } from '../NameSite';
 @Injectable({
     providedIn: 'root',
 })
@@ -12,7 +13,17 @@ import { SiteViewModel } from '../SiteViewModel';
 })
 export class ArticleService {
   constructor(private http: HttpClient) { }
-  getNews(numberSite: number): Observable<Array<SiteViewModel>> {
-    return this.http.get<Array<SiteViewModel>>('https://localhost:44398/api/Parser/GetSites?numberPart=' + numberSite);
-    }
+
+  getNews(): Observable<Array<Site>>
+  {
+    return this.http.get<Array<Site>>('https://localhost:44398/api/Parser/GetSites');
+  }
+
+  getPartNews(idLastArticle: number, siteNumber: number): Observable<Site>
+  {
+    return this.http.get<Site>('https://localhost:44398/api/Parser/GetPartSites?idLastArticle=' + idLastArticle + '&siteNumber=' + siteNumber);
+  }
+  getNameSitesUser(): Observable<Array<NameSite>> {
+    return this.http.get<Array<NameSite>>('https://localhost:44398/api/Help/GetNameSitesUser');
+  }
 }

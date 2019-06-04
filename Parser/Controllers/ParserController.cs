@@ -23,63 +23,65 @@ namespace Parser.Controllers
     [Route("api/[controller]")]
     public class ParserController : Controller
     {
-        private static int[] _partArticles;
-        private readonly DbContextOptionsBuilder<ApplicationDbContext> _dbContextOptionsBuilder;
-        private readonly string _connectionString;
-        private readonly DbContextOptions<ApplicationDbContext> _options;
-        private readonly IConfigurationRoot _configurationRoot;
+        private readonly ApplicationDbContext _context;
+        const int _partSize= 9;
 
-        public ParserController() : base()
+        public ParserController(ApplicationDbContext context)
         {
-            _configurationRoot = ConfigurationHelper.GetConfiguration(Directory.GetCurrentDirectory());
-            _connectionString = _configurationRoot.GetConnectionString("ParserDB");
-            _dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            _options = _dbContextOptionsBuilder.UseSqlServer(_connectionString).Options;
-        }
-
-        static ParserController()
-        {
-            _partArticles=new int[4] { 0, 0, 0, 0 };
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            _context = context;
         }
 
         [HttpGet("[action]")]
-        public List<SiteViewModel> GetSites(int numberPart=3)
+        public List<SiteViewModel> GetSites()
         {
-            _partArticles[numberPart]++;
-            var counter = 0;
             var siteArticles = new List<SiteViewModel>();
-            using (var context = new ApplicationDbContext(_options))
+            using (_context)
             {
-               var dbArticles = context.Articles.GroupBy(t=>t.SiteId);
-               string srt= dbArticles.GetType().ToString();
-                foreach (var site in dbArticles )
+                var dbArticles = _context.Articles.OrderByDescending(t=>t.Id).GroupBy(t => t.SiteId);
+                foreach (var site in dbArticles)
                 {
                     var articles = new List<ArticleViewModel>();
-                    foreach (var article in site)
+                    foreach (var article in site.Take(_partSize))
                     {
-                        articles.Add(new ArticleViewModel { Link = article.Url, Title = article.Title, PartContent = article.PartContent, FullContent = article.Content });
-                        if (articles.Count() == _partArticles[counter]*9+9)
-                        {
-                            break;
-                        }
+                        articles.Add(
+                            new ArticleViewModel
+                            {
+                                Link = article.Url,
+                                Title = article.Title,
+                                PartContent = article.PartContent,
+                                FullContent = article.Content
+                            });
                     }
-                    counter++;
-                    siteArticles.Add(new SiteViewModel { Articles=articles});
+                    siteArticles.Add(new SiteViewModel { Articles = articles,IdLastArticle=site.Take(_partSize).Last().Id, PartNumber=0 });
                 }
-            }           
+            }
             return siteArticles;
         }
 
-        public void Display(string str)
+        [HttpGet("[action]")]
+        public SiteViewModel GetPartSites(int idLastArticle, int siteNumber)
         {
-            System.IO.StreamWriter writer = new System.IO.StreamWriter("D:\\Test.txt", true);
-            writer.WriteLine("\n" + DateTime.Now.ToString() + str);
-            writer.Close();
+            var siteArticles = new SiteViewModel();
+            using (_context)
+            {
+                var dbArticles = _context.Articles.OrderByDescending(t => t.Id).Where(t => t.SiteId == siteNumber && t.Id < idLastArticle).Take(_partSize);
+                foreach (var article in dbArticles)
+                {
+                    siteArticles.Articles.Add(
+                        new ArticleViewModel
+                        {
+                            Link = article.Url,
+                            Title = article.Title,
+                            PartContent = article.PartContent,
+                            FullContent = article.Content
+                        });
+                }
+                if (dbArticles.Count() > 0)
+                {
+                    siteArticles.IdLastArticle = dbArticles.Last().Id;
+                }
+            }
+            return siteArticles;
         }
     }
 }

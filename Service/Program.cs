@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Parser.DAL.Entities;
 using System.Configuration;
 using Microsoft.IdentityModel.Protocols;
+using ParserService;
+using Parser.DAL;
 
 namespace Service
 {
@@ -18,10 +20,14 @@ namespace Service
         /// </summary>
         static void Main()
         {
+            DbContextOptionsBuilder<ApplicationDbContext> dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            string connectionString = ConfigurationManager.ConnectionStrings["Context"].ConnectionString;
+            DbContextOptions<ApplicationDbContext> options = dbContextOptionsBuilder.UseSqlServer(connectionString).Options;
+            DefaultSites.InitializeSites(options);
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new ParserService()
+                new ParserService(options)
             };
             ServiceBase.Run(ServicesToRun);
         }

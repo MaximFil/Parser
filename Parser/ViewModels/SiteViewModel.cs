@@ -8,6 +8,9 @@ namespace Parser.ViewModels
     public class SiteViewModel
     {
         public List<ArticleViewModel> Articles { get; set; }
+        public int PartNumber { get; set; }
+        public int IdLastArticle { get; set; }
+        
         public SiteViewModel()
         {
             Articles = new List<ArticleViewModel>();

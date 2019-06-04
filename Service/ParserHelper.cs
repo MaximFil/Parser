@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Parser.DAL.Entities;
 using System.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Parser.DAL;
 
 namespace Service
 {
@@ -16,9 +18,13 @@ namespace Service
         private readonly string _urlBelta;
         private readonly string _file;
         private readonly string _domainBelta;
+        private readonly DbContextOptions<ApplicationDbContext> _options;
+        private readonly ApplicationDbContext _context;
 
-        public ParserHelper()
+        public ParserHelper(DbContextOptions<ApplicationDbContext> options)
         {
+            _options = options;
+            _context = new ApplicationDbContext(_options);
             _urlHabr = ConfigurationManager.AppSettings["UrlHabr"];
             _urlTutBy = ConfigurationManager.AppSettings["UrlTutBy"];
             _urlBelta = ConfigurationManager.AppSettings["UrlBelta"];
@@ -28,6 +34,8 @@ namespace Service
 
         public async Task<List<Article>> GetHabrArticles()
         {
+            var domain = new Uri(_urlHabr).Host;
+            var siteId = _context.Sites.FirstOrDefault(t=>t.Domain==domain).Id;
             string сontent;
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
@@ -43,7 +51,7 @@ namespace Service
                     articles.Add(new Article
                     {
                         Title = item.Text(),
-                        SiteId=1,
+                        SiteId=siteId,
                         Url = item.GetAttribute("href"),
                         PartContent = GetShortenedArticleDescription(сontent),
                         Content = сontent
@@ -59,6 +67,8 @@ namespace Service
 
         public async Task<List<Article>> GetTutByArticles()
         {
+            var domain = new Uri(_urlTutBy).Host;
+            var siteId = _context.Sites.FirstOrDefault(t => t.Domain == domain).Id;
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync(_urlTutBy);
@@ -108,6 +118,8 @@ namespace Service
 
         public async Task<List<Article>> GetBeltaArticles()
         {
+            var domain = new Uri(_urlBelta).Host;
+            var siteId = _context.Sites.FirstOrDefault(t => t.Domain == domain).Id;
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync(_urlBelta);

@@ -15,18 +15,13 @@ namespace Service
     {
         static bool enabled;
         const int interval = 100000;
-        private readonly DbContextOptionsBuilder<ApplicationDbContext> _dbContextOptionsBuilder;
-        private readonly string _connectionString;
         private readonly DbContextOptions<ApplicationDbContext> _options;
         private readonly string _file;
 
-        public ArticlesRefresher()
-        {            
+        public ArticlesRefresher(DbContextOptions<ApplicationDbContext> options)
+        {
             enabled = true;
-            _dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            _connectionString = ConfigurationManager.
-                ConnectionStrings["Context"].ConnectionString;
-            _options = _dbContextOptionsBuilder.UseSqlServer(_connectionString).Options;
+            _options = options;
             _file = ConfigurationManager.AppSettings["ArticlesFile"];
         }
 
@@ -58,14 +53,13 @@ namespace Service
         public async Task Create()
         {
             display("Method Create begin working");
-            var parserHelper = new ParserHelper();
+            var parserHelper = new ParserHelper(_options);
             display("Method Create begin parsing articles");
             var articles = await parserHelper.GetArticles();
             display("Method Create finish parsing articles");
             display("Method Create begin refresh articles in database");
             using (var context = new ApplicationDbContext(_options))
             {
-                var sites = context.Sites.ToList();
                 foreach (var article in articles)
                 {
                     var dbArticle = context.Articles.FirstOrDefault(a => a.Url == article.Url);

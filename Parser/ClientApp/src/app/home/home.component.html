@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <h1>Parsing habr</h1>
+
 <html>
 <body>
   <div *ngIf="isLoading==false; then loadBlock else elseLoadBlock"></div>
@@ -25,7 +26,7 @@
                   </div>
                 </div>
                 <form>
-                  <button (click)="getNews(i)" type="button" class="btn btn-secondary center">still</button>
+                  <button (click)="getPartNews(i)" type="button" class="btn btn-secondary center">still</button>
                 </form>
               </div>
         </div>
@@ -40,4 +41,3 @@
   <p> {{count}}</p>
 </body>
 </html>
-<!--*ngIf="countPartNews*9<=countAllNews"-->

@@ -18,19 +18,21 @@ namespace Service
 {
     public partial class ParserService : ServiceBase
     {
+        private readonly DbContextOptions<ApplicationDbContext> _options;
         ArticlesRefresher articlesRefresher;
         const int interval = 1000;
-        public ParserService()
+        public ParserService(DbContextOptions<ApplicationDbContext> options)
         {
             InitializeComponent();
             this.CanStop = true;
             this.CanPauseAndContinue = true;
-            this.AutoLog = true;           
+            this.AutoLog = true;
+            _options = options;
         }
 
         protected override void OnStart(string[] args)
         {
-            articlesRefresher = new ArticlesRefresher();    
+            articlesRefresher = new ArticlesRefresher(_options);    
             var crudArticlesThread = new Thread(new ThreadStart(articlesRefresher.Start));
             crudArticlesThread.Start();
         }
