@@ -3,21 +3,21 @@
 
 <html>
 <body>
-  <div *ngIf="isLoading==false; then loadBlock else elseLoadBlock"></div>
+  <div *ngIf="isLoaded==false; then loadBlock else elseLoadBlock"></div>
   <ng-template #loadBlock>
-    <mat-spinner *ngIf="isLoading==false" mode="indeterminate" color="warn" class="center"></mat-spinner>
+    <mat-spinner *ngIf="isLoaded==false" mode="indeterminate" color="warn" class="center"></mat-spinner>
   </ng-template>
   <ng-template #elseLoadBlock>
-    <div *ngFor="let Items of siteArticles;let i = index">
-      <h3>{{Items.nameSite}}</h3>
-      <div *ngIf="Items.articles.length>0; then thenBlock else elseBlock"></div>
+    <div *ngFor="let items of sites;let i = index">
+      <h3>{{items.nameSite}}</h3>
+      <div *ngIf="items.articles.length>0; then thenBlock else elseBlock"></div>
       
       <ng-template #thenBlock>
         <div class="main_block">        
           <div class="container">
             <div class="row">
-              <div class="col-sm-4 small_block" *ngFor="let item of Items.articles;let j = index">
-                <a href={{item.link}} target="_blank" (click)="saveShowArticle(item.id,i,j,Items.idLastArticle)">
+              <div class="col-sm-4 small_block" *ngFor="let item of items.articles;let j = index">
+                <a href={{item.link}} target="_blank" (click)="saveShowArticle(item.id)">
                   {{item.title}}
                 </a>
                 <p>{{item.partContent}}</p>
@@ -27,7 +27,7 @@
             </div>
           </div>
           <form>
-            <button (click)="getPartNews(Items.siteId)" type="button" class="btn btn-secondary center">still</button>
+            <button (click)="getMoreArticles(items.siteId,i)" type="button" class="btn btn-secondary center">More articles</button>
           </form>
         </div>
       </ng-template>

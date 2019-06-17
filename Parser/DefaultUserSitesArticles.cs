@@ -35,16 +35,16 @@ namespace Parser
                         context.UserSites.Add(new UserSite { UserId = user.Id, SiteId = site.Id });
                     }
                 }
-                var articles = context.Articles.ToList();
-                var users = context.Users.FirstOrDefault();
-                foreach (var article in articles)
-                {
-                    var dbArticle = context.UserArticles.FirstOrDefault(t=>t.ArticleId==article.Id);
-                    if (dbArticle == null)
-                    {
-                        context.UserArticles.Add(new UserArticle { UserId = users.Id, ArticleId = article.Id, Deleted = false });
-                    }
-                }
+                //var articles = context.Articles.ToList();
+                //var users = context.Users.FirstOrDefault();
+                //foreach (var article in articles)
+                //{
+                //    var dbArticle = context.UserArticles.FirstOrDefault(t=>t.ArticleId==article.Id);
+                //    if (dbArticle == null)
+                //    {
+                //        context.UserArticles.Add(new UserArticle { UserId = users.Id, ArticleId = article.Id, Deleted = false });
+                //    }
+                //}
                 context.SaveChanges();    
             }
         }

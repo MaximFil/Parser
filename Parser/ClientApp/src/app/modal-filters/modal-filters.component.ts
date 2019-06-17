@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit } from '@angular/core';
+import { NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import { ArticleService } from '../service/article.service';
 import { NameSite } from '../NameSite';
 import { HomeComponent } from '../home/home.component';
@@ -10,7 +10,6 @@ import { HomeComponent } from '../home/home.component';
 })
 export class ModalFiltersComponent implements OnInit {
   nameSitesUser: Array<NameSite>;
-  mas: Array<number>
   homeComponent: HomeComponent;
   showArticle: boolean;
   constructor(private activeModal: NgbActiveModal, private articleService: ArticleService) { }

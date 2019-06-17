@@ -1,4 +1,3 @@
-import { Article } from '../Article';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Component } from '@angular/core';
 import { Http } from '@angular/http';
@@ -14,14 +13,14 @@ import { NameSite } from '../NameSite';
 export class ArticleService {
   constructor(private http: HttpClient) { }
 
-  getNews(): Observable<Array<Site>>
+  getSites(): Observable<Array<Site>>
   {
     return this.http.get<Array<Site>>('https://localhost:44398/api/Parser/GetSites');
   }
 
-  getPartNews(idLastArticle: number, siteNumber: number): Observable<Site>
+  getMoreArticles(idLastArticle: number, siteId: number): Observable<Site>
   {
-    return this.http.get<Site>('https://localhost:44398/api/Parser/GetPartSites?idLastArticle=' + idLastArticle + '&siteNumber=' + siteNumber);
+    return this.http.get<Site>('https://localhost:44398/api/Parser/getMoreArticles?idLastArticle=' + idLastArticle + '&siteId=' + siteId);
   }
 
   getNameSitesUser(): Observable<Array<NameSite>> {
@@ -36,7 +35,7 @@ export class ArticleService {
     return this.http.post('https://localhost:44398/api/Help/SaveFilters?showArticles=' + showArticle, nameSite, { responseType: 'text' });
   }
 
-  saveShowArticles(idArticle: number) {
+  saveShowArticle(idArticle: number) {
     return this.http.post('https://localhost:44398/api/Help/SaveShowArticle', idArticle, { responseType: 'text' });
   }
 }

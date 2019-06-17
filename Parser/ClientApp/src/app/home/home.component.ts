@@ -1,17 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ArticleService } from '../service/article.service';
-import { Article } from '../Article';
-import { MatProgressSpinner } from '@angular/material';
-import { Observable, of } from 'rxjs';
 import { finalize, catchError } from 'rxjs/operators';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalComponent } from '../modal/modal.component';
 import { Site } from '../Site';
-import { error } from '@angular/compiler/src/util';
-import { log } from 'util';
-import { Title } from '@angular/platform-browser';
-import { Content } from '@angular/compiler/src/render3/r3_ast';
-import { forEach } from '@angular/router/src/utils/collection';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -19,59 +12,54 @@ import { forEach } from '@angular/router/src/utils/collection';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  siteArticles: Array<Site>;
-  partSiteArticles: Site;
-  isLoading: boolean = false;
-  countAllNews: number;
+  sites: Array<Site>;
+  isLoaded: boolean;
 
-  constructor(private ArticleService: ArticleService, private modalService: NgbModal) {
-    this.siteArticles = [];
+  constructor(private articleService: ArticleService, private modalService: NgbModal) {
+    this.sites = [];
+    this.isLoaded = false;
   }
 
   ngOnInit() {
-    this.getNews();
+    this.getSites();
   }
 
-  getNews(): void {
-    this.ArticleService.getNews()
-      .pipe(catchError(error => {
-        console.log('error occured:', error);
-        throw error;
-      })
+  getSites(): void {
+    this.articleService.getSites()
+      .pipe(catchError(this.handleError<any>(Error))
         , finalize(() => {
-          this.countAllNews = this.siteArticles.length;
-          this.isLoading = true;
+          this.isLoaded = true;
         }))
-      .subscribe(ArticlesLinks => (this.siteArticles = ArticlesLinks));
+      .subscribe(sites => (this.sites = sites));
   }
 
-  getPartNews(siteNumber: number) {
-    var ber: number = --siteNumber;
-    this.ArticleService.getPartNews(this.siteArticles[ber].idLastArticle, ++siteNumber)
-      .pipe(catchError(error => {
-        console.log('error occured:', error);
-        throw error;
-      })
+  getMoreArticles(siteId: number, siteNumber: number) {
+    var partSiteArticles: Site;
+    this.articleService.getMoreArticles(this.sites[siteNumber].idLastArticle, siteId)
+      .pipe(catchError(this.handleError<any>(Error))
         , finalize(() => {
-          for (let item of this.partSiteArticles.articles) {
-            this.siteArticles[ber].articles.push(item);
+          for (let item of partSiteArticles.articles) {
+            this.sites[siteNumber].articles.push(item);
           }
-          this.siteArticles[ber].idLastArticle = this.partSiteArticles.idLastArticle;
+          this.sites[siteNumber].idLastArticle = partSiteArticles.idLastArticle;
         }))
-      .subscribe(ArticlesLinks => (this.partSiteArticles = ArticlesLinks));
+      .subscribe(partSite => (partSiteArticles = partSite));
   }
 
-  open(Article: any) {
+  open(article: any) {
     const modalRef = this.modalService.open(ModalComponent);
-    modalRef.componentInstance.title = Article.title;
-    modalRef.componentInstance.content = Article.fullContent;
+    modalRef.componentInstance.title = article.title;
+    modalRef.componentInstance.content = article.fullContent;
   }
 
-  refresh(): void {
-    window.location.reload();
+  saveShowArticle(idArticle: number) {
+    this.articleService.saveShowArticle(idArticle).subscribe();
   }
 
-  saveShowArticle(idArticle: number, numberSite: number, numberArticle: number, idLastArticle: number) {
-    this.ArticleService.saveShowArticles(idArticle).subscribe();
+  handleError<T>(result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      return of(result as T);
+    };
   }
 }

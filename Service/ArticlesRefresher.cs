@@ -14,7 +14,7 @@ namespace Service
     public class ArticlesRefresher
     {
         static bool enabled;
-        const int interval = 100000;
+        const int interval = 300000;
         private readonly DbContextOptions<ApplicationDbContext> _options;
         private readonly string _file;
 

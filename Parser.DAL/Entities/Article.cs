@@ -19,6 +19,7 @@ namespace Parser.DAL.Entities
         public Article()
         {
             UserArticles = new List<UserArticle>();
+            Site = new Site();
         }
     }
 }

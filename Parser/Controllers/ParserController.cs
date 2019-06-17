@@ -1,22 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
-using AngleSharp;
-using AngleSharp.Dom;
 using Parser.ViewModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using AngleSharp.Html.Parser;
 using Parser.DAL.Entities;
 using Parser.DAL;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
-using Microsoft.Extensions.Configuration;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-using System.IO;
 
 namespace Parser.Controllers
 {
@@ -34,18 +22,33 @@ namespace Parser.Controllers
         [HttpGet("[action]")]
         public List<SiteViewModel> GetSites()
         {
-            var siteArticles = new List<SiteViewModel>();
+            var sites = new List<SiteViewModel>();
             IEnumerable<IGrouping<int, Article>> dbArticles;
             using (_context)
             {
+                var userSitesIds = _context.Users.Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
                 var showArticle = _context.Users.FirstOrDefault().ViewSetting;
+                var userId = _context.Users.FirstOrDefault().Id;
                 if (showArticle == false)
                 {
-                    dbArticles = _context.Articles.Include(t => t.Site.UserSites).OrderBy(t => t.SiteId).Where(t => t.SiteId == t.Site.UserSites.FirstOrDefault(f => f.SiteId == t.SiteId).SiteId).Where(t => t.UserArticles.FirstOrDefault(f => f.ArticleId == t.Id).Deleted == false).ToList().GroupBy(t => t.SiteId);
+                    dbArticles = _context.Articles
+                        .Include(a => a.UserArticles)
+                        .Include(a=>a.Site)
+                        .Where(a => userSitesIds.Contains(a.SiteId))
+                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)
+                        .OrderBy(t => t.SiteId)
+                        .GroupBy(t => t.SiteId)
+                        .ToList();
+                        
                 }
                 else
                 {
-                dbArticles = _context.Articles.Include(t=>t.Site.UserSites).OrderBy(t => t.SiteId).Where(t => t.SiteId == t.Site.UserSites.FirstOrDefault(f => f.SiteId == t.SiteId).SiteId).ToList().GroupBy(t=>t.SiteId);
+                    dbArticles = _context.Articles
+                        .Include(a => a.Site)
+                        .Where(a => userSitesIds.Contains(a.SiteId))
+                        .OrderBy(a => a.SiteId)
+                        .GroupBy(a => a.SiteId)
+                        .ToList();
                 }
                 foreach (var site in dbArticles)
                 {
@@ -62,7 +65,7 @@ namespace Parser.Controllers
                                 Id = article.Id
                             });
                     }
-                    siteArticles.Add(
+                    sites.Add(
                         new SiteViewModel
                         {
                             Articles = articles,
@@ -72,24 +75,37 @@ namespace Parser.Controllers
                         });
                 }
             }
-            return siteArticles;
+            return sites;
         }
 
         [HttpGet("[action]")]
-        public SiteViewModel GetPartSites(int idLastArticle, int siteNumber)
+        public SiteViewModel getMoreArticles(int idLastArticle, int siteId)
         {
             var siteArticles = new SiteViewModel();
             IQueryable<Article> dbArticles;
             using (_context)
             {
-                var showArticles = _context.Users.First().ViewSetting;
-                if(showArticles == false)
+                var userSitesIds = _context.Users.Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
+                var showArticle = _context.Users.FirstOrDefault().ViewSetting;
+                var userId = _context.Users.FirstOrDefault().Id;
+
+                if (showArticle == false)
                 {
-                    dbArticles = _context.Articles.OrderByDescending(t => t.Id).Where(t => t.SiteId == siteNumber && t.Id < idLastArticle && t.UserArticles.FirstOrDefault(f=>f.ArticleId==t.Id).Deleted==false).Take(_partSize);
+                    dbArticles = _context.Articles
+                        .Include(a => a.UserArticles)
+                        .Where(a => a.SiteId==siteId)
+                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)
+                        .Where(a=>a.Id<idLastArticle)
+                        .OrderByDescending(a => a.Id)
+                        .Take(_partSize);
                 }
                 else
                 {
-                    dbArticles = _context.Articles.OrderByDescending(t => t.Id).Where(t => t.SiteId == siteNumber && t.Id < idLastArticle).Take(_partSize);
+                    dbArticles = _context.Articles
+                        .Where(a => a.SiteId==siteId)
+                        .Where(a => a.Id < idLastArticle)
+                        .OrderByDescending(a => a.Id)
+                        .Take(_partSize);
                 }
                 foreach (var article in dbArticles)
                 {

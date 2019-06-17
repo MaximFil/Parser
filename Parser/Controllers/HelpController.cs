@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Parser.DAL;
@@ -26,14 +24,14 @@ namespace Parser.Controllers
             var nameSitesUser = new List<NameSiteViewModel>();
             using (_context)
             {
-                var userSites = _context.Sites.Where(t => t.Id == t.UserSites.FirstOrDefault(f => f.SiteId == t.Id).SiteId).ToList();
+                var userSitesIds = _context.Users.Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
                 var sites = _context.Sites.ToList();
                 foreach (var site in sites)
                 {
                     var select = false;
-                    foreach (var item in userSites)
+                    foreach (var item in userSitesIds)
                     {
-                        if (site.Id == item.Id)
+                        if (site.Id == item)
                         {
                             select = true;
                         }
@@ -85,7 +83,7 @@ namespace Parser.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _context.UserArticles.FirstOrDefault(t => t.ArticleId == idArticle).Deleted = true;
+                    _context.UserArticles.Add(new UserArticle { UserId=_context.Users.FirstOrDefault().Id, ArticleId=idArticle});
                     _context.SaveChanges();
                     return Ok();
                 }
