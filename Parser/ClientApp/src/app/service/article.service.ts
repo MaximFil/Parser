@@ -23,7 +23,20 @@ export class ArticleService {
   {
     return this.http.get<Site>('https://localhost:44398/api/Parser/GetPartSites?idLastArticle=' + idLastArticle + '&siteNumber=' + siteNumber);
   }
+
   getNameSitesUser(): Observable<Array<NameSite>> {
     return this.http.get<Array<NameSite>>('https://localhost:44398/api/Help/GetNameSitesUser');
+  }
+
+  getValueShow(): Observable<boolean> {
+    return this.http.get<boolean>('https://localhost:44398/api/Help/GetValueShow');
+  }
+
+  saveFilters(nameSite: Array<NameSite>, showArticle: boolean) {
+    return this.http.post('https://localhost:44398/api/Help/SaveFilters?showArticles=' + showArticle, nameSite, { responseType: 'text' });
+  }
+
+  saveShowArticles(idArticle: number) {
+    return this.http.post('https://localhost:44398/api/Help/SaveShowArticle', idArticle, { responseType: 'text' });
   }
 }

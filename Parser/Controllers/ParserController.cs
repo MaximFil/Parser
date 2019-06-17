@@ -35,13 +35,22 @@ namespace Parser.Controllers
         public List<SiteViewModel> GetSites()
         {
             var siteArticles = new List<SiteViewModel>();
+            IEnumerable<IGrouping<int, Article>> dbArticles;
             using (_context)
             {
-                var dbArticles = _context.Articles.OrderByDescending(t=>t.Id).GroupBy(t => t.SiteId);
+                var showArticle = _context.Users.FirstOrDefault().ViewSetting;
+                if (showArticle == false)
+                {
+                    dbArticles = _context.Articles.Include(t => t.Site.UserSites).OrderBy(t => t.SiteId).Where(t => t.SiteId == t.Site.UserSites.FirstOrDefault(f => f.SiteId == t.SiteId).SiteId).Where(t => t.UserArticles.FirstOrDefault(f => f.ArticleId == t.Id).Deleted == false).ToList().GroupBy(t => t.SiteId);
+                }
+                else
+                {
+                dbArticles = _context.Articles.Include(t=>t.Site.UserSites).OrderBy(t => t.SiteId).Where(t => t.SiteId == t.Site.UserSites.FirstOrDefault(f => f.SiteId == t.SiteId).SiteId).ToList().GroupBy(t=>t.SiteId);
+                }
                 foreach (var site in dbArticles)
                 {
                     var articles = new List<ArticleViewModel>();
-                    foreach (var article in site.Take(_partSize))
+                    foreach (var article in site.OrderByDescending(t => t.Id).Take(_partSize))
                     {
                         articles.Add(
                             new ArticleViewModel
@@ -49,10 +58,18 @@ namespace Parser.Controllers
                                 Link = article.Url,
                                 Title = article.Title,
                                 PartContent = article.PartContent,
-                                FullContent = article.Content
+                                FullContent = article.Content,
+                                Id = article.Id
                             });
                     }
-                    siteArticles.Add(new SiteViewModel { Articles = articles,IdLastArticle=site.Take(_partSize).Last().Id, PartNumber=0 });
+                    siteArticles.Add(
+                        new SiteViewModel
+                        {
+                            Articles = articles,
+                            IdLastArticle = site.OrderByDescending(t => t.Id).Take(_partSize).Last().Id,
+                            NameSite = site.FirstOrDefault(t => t.SiteId == t.Site.Id).Site.Name,
+                            SiteId = site.FirstOrDefault().SiteId
+                        });
                 }
             }
             return siteArticles;
@@ -62,9 +79,18 @@ namespace Parser.Controllers
         public SiteViewModel GetPartSites(int idLastArticle, int siteNumber)
         {
             var siteArticles = new SiteViewModel();
+            IQueryable<Article> dbArticles;
             using (_context)
             {
-                var dbArticles = _context.Articles.OrderByDescending(t => t.Id).Where(t => t.SiteId == siteNumber && t.Id < idLastArticle).Take(_partSize);
+                var showArticles = _context.Users.First().ViewSetting;
+                if(showArticles == false)
+                {
+                    dbArticles = _context.Articles.OrderByDescending(t => t.Id).Where(t => t.SiteId == siteNumber && t.Id < idLastArticle && t.UserArticles.FirstOrDefault(f=>f.ArticleId==t.Id).Deleted==false).Take(_partSize);
+                }
+                else
+                {
+                    dbArticles = _context.Articles.OrderByDescending(t => t.Id).Where(t => t.SiteId == siteNumber && t.Id < idLastArticle).Take(_partSize);
+                }
                 foreach (var article in dbArticles)
                 {
                     siteArticles.Articles.Add(
@@ -73,7 +99,8 @@ namespace Parser.Controllers
                             Link = article.Url,
                             Title = article.Title,
                             PartContent = article.PartContent,
-                            FullContent = article.Content
+                            FullContent = article.Content,
+                            Id = article.Id
                         });
                 }
                 if (dbArticles.Count() > 0)

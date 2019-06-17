@@ -8,21 +8,63 @@
       </div>
       <div class="container">
         <div class="row">
-          <div *ngFor="let Items of nameSitesUser" class="col">
-            <div *ngIf="Items.select==true; then thenBlock else elseBlock"></div>
-            <ng-template #thenBlock>
-              <label class="form-check-label margin_left_label"><input class="form-check-input" type="checkbox" name="brands[]" value="1" checked> {{Items.nameSite}}</label>
-            </ng-template>
-            <ng-template #elseBlock>
-              <label class="form-check-label margin_left_label"><input class="form-check-input" type="checkbox" name="brands[]" value="1"> {{Items.nameSite}}</label>
-            </ng-template>
-        </div>
+          <div class="col">
+
+
+            <!--<div *ngFor="let Items of nameSitesUser">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="defaultChecked" value="1" [(ngModel)]="Items.select"
+                       [attr.checked]="Items.select==true?true:null">
+                <label class="custom-control-label" for="defaultChecked">{{Items.nameSite}}</label>
+              </div>
+            </div>
+          </div>-->
+
+
+
+              <div *ngFor="let Items of nameSitesUser">
+                <label class="form-check-label margin_left_label">
+                  <input class="form-check-input" type="checkbox" name="brand" [(ngModel)]="Items.select"
+                         [attr.checked]="Items.select==true?true:null">
+                  {{Items.nameSite}}
+                </label>
+              </div>
+            </div>
+
+
+            <div class="col">
+
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="defaultUnchecked" [value]="true" [(ngModel)]="showArticle" name="defaultExampleRadios" [attr.checked]="showArticle==true?true:null">
+                <label class="custom-control-label" for="defaultUnchecked">Show</label>
+              </div>
+
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="defaultChecked" [value]="false" [(ngModel)]="showArticle" name="defaultExampleRadios" [attr.checked]="showArticle==false?true:null">
+                <label class="custom-control-label" for="defaultChecked">Hide</label>
+              </div>
+            </div>
+            <!--<div class="col">
+
+    <div class="custom-control custom-radio">
+      <input name="look" type="radio" class="custom-control-input" id="defaultUnchecked" />
+      <p class="form-check-label margin_left_label">
+        show
+      </p>
+    </div>
+
+    <p class="form-check-label margin_left_label">
+      <input name="look" type="radio" class="form-check-input"/>hide
+    </p>
+  </div>-->
+          </div>
+
+
         <div class="modal-body">
-          <p></p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-dark" (click)="activeModal.close ('Close click')">Close</button>
-        </div>
-      </div>
+          <button type="button" class="btn btn-outline-dark" (click)="saveFilters()">Save</button>
+        </div>     
     </div>
   </div>
+</div>

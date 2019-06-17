@@ -13,6 +13,8 @@ namespace Parser.DAL
         public DbSet<User> Users { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Site> Sites { get; set; }
+        public DbSet<UserSite> UserSites { get; set; }
+        public DbSet<UserArticle> UserArticles { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 

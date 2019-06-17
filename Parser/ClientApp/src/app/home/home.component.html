@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<h1>Parsing habr</h1>
+<h1>Parser</h1>
 
 <html>
 <body>
@@ -8,36 +8,36 @@
     <mat-spinner *ngIf="isLoading==false" mode="indeterminate" color="warn" class="center"></mat-spinner>
   </ng-template>
   <ng-template #elseLoadBlock>
-    <div *ngIf="countAllNews>0; then thenBlock else elseBlock"></div>
-    <ng-template #thenBlock>
-      <div *ngFor="let Items of siteArticles;let i = index">      
-          <div class="main_block">          
-              <h3>habr</h3>
-                <div class="container">
-                  <div class="row">
-                    <div class="col-sm-4 small_block" *ngFor="let item of Items.articles">
-                      <a href={{item.link}} target="_blank">
-                        {{item.title}}
-                      </a>
-                      <p>{{item.partContent}}</p>
-                      <br>
-                      <button class="btn btn-link richt_down" (click)="open(item)">More</button>
-                    </div>
-                  </div>
-                </div>
-                <form>
-                  <button (click)="getPartNews(i)" type="button" class="btn btn-secondary center">still</button>
-                </form>
+    <div *ngFor="let Items of siteArticles;let i = index">
+      <h3>{{Items.nameSite}}</h3>
+      <div *ngIf="Items.articles.length>0; then thenBlock else elseBlock"></div>
+      
+      <ng-template #thenBlock>
+        <div class="main_block">        
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-4 small_block" *ngFor="let item of Items.articles;let j = index">
+                <a href={{item.link}} target="_blank" (click)="saveShowArticle(item.id,i,j,Items.idLastArticle)">
+                  {{item.title}}
+                </a>
+                <p>{{item.partContent}}</p>
+                <br>
+                <button class="btn btn-link richt_down" (click)="open(item)">More</button>
               </div>
+            </div>
+          </div>
+          <form>
+            <button (click)="getPartNews(Items.siteId)" type="button" class="btn btn-secondary center">still</button>
+          </form>
         </div>
-    </ng-template>
-    <ng-template #elseBlock>
-      <div class="main_block">
-        <h3>habr</h3>
-        <p>Articles Not found</p>
-      </div>
-    </ng-template>
+      </ng-template>
+      <ng-template #elseBlock>
+        <{{item.nameSite}}>
+        <div class="main_block">
+          <p>Articles Not found</p>
+        </div>
+      </ng-template>
+    </div>
   </ng-template>
-  <p> {{count}}</p>
 </body>
 </html>

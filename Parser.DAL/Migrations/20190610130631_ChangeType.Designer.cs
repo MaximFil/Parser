@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Parser.DAL;
 
 namespace Parser.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190610130631_ChangeType")]
+    partial class ChangeType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +71,7 @@ namespace Parser.DAL.Migrations
 
                     b.Property<string>("LastName");
 
-                    b.Property<bool>("ViewSetting");
+                    b.Property<bool?>("ViewSetting");
 
                     b.HasKey("Id");
 
@@ -88,7 +90,7 @@ namespace Parser.DAL.Migrations
 
                     b.HasIndex("ArticleId");
 
-                    b.ToTable("UserArticles");
+                    b.ToTable("UserArticle");
                 });
 
             modelBuilder.Entity("Parser.DAL.Entities.UserSite", b =>

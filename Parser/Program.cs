@@ -26,7 +26,7 @@ namespace Parser
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
                     context.Database.Migrate();
-                    DefaultUserSites.InitializeUserSites(services);
+                    DefaultUserSitesArticles.InitializeUserSites(services);
                 }
                 catch (Exception ex)
                 {

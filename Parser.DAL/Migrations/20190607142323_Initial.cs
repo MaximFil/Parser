@@ -9,23 +9,6 @@ namespace Parser.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Articles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Url = table.Column<string>(nullable: true),
-                    SiteId = table.Column<int>(nullable: false),
-                    Title = table.Column<string>(nullable: true),
-                    PartContent = table.Column<string>(nullable: true),
-                    Content = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Articles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Sites",
                 columns: table => new
                 {
@@ -56,26 +39,24 @@ namespace Parser.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserArticle",
+                name: "Articles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false),
-                    ArticleId = table.Column<int>(nullable: false),
-                    Deleted = table.Column<bool>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Url = table.Column<string>(nullable: true),
+                    SiteId = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    PartContent = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserArticle", x => new { x.UserId, x.ArticleId });
+                    table.PrimaryKey("PK_Articles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserArticle_Articles_ArticleId",
-                        column: x => x.ArticleId,
-                        principalTable: "Articles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserArticle_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
+                        name: "FK_Articles_Sites_SiteId",
+                        column: x => x.SiteId,
+                        principalTable: "Sites",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -104,6 +85,36 @@ namespace Parser.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserArticle",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(nullable: false),
+                    ArticleId = table.Column<int>(nullable: false),
+                    Deleted = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserArticle", x => new { x.UserId, x.ArticleId });
+                    table.ForeignKey(
+                        name: "FK_UserArticle_Articles_ArticleId",
+                        column: x => x.ArticleId,
+                        principalTable: "Articles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserArticle_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Articles_SiteId",
+                table: "Articles",
+                column: "SiteId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_UserArticle_ArticleId",
                 table: "UserArticle",
@@ -127,10 +138,10 @@ namespace Parser.DAL.Migrations
                 name: "Articles");
 
             migrationBuilder.DropTable(
-                name: "Sites");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Sites");
         }
     }
 }

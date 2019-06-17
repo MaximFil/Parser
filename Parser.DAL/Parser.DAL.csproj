@@ -262,9 +262,25 @@
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\UserArticle.cs" />
     <Compile Include="Entities\UserSite.cs" />
-    <Compile Include="Migrations\20190522131939_Initial.cs" />
-    <Compile Include="Migrations\20190522131939_Initial.designer.cs">
-      <DependentUpon>20190522131939_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\20190607142323_Initial.cs" />
+    <Compile Include="Migrations\20190607142323_Initial.designer.cs">
+      <DependentUpon>20190607142323_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190607143721_AddUserSites.cs" />
+    <Compile Include="Migrations\20190607143721_AddUserSites.designer.cs">
+      <DependentUpon>20190607143721_AddUserSites.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190610130631_ChangeType.cs" />
+    <Compile Include="Migrations\20190610130631_ChangeType.designer.cs">
+      <DependentUpon>20190610130631_ChangeType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190610131636_BoolChange.cs" />
+    <Compile Include="Migrations\20190610131636_BoolChange.designer.cs">
+      <DependentUpon>20190610131636_BoolChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20190610151934_AddUserArticles.cs" />
+    <Compile Include="Migrations\20190610151934_AddUserArticles.designer.cs">
+      <DependentUpon>20190610151934_AddUserArticles.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\ApplicationDbContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -273,6 +289,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

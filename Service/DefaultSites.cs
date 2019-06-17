@@ -20,8 +20,8 @@ namespace ParserService
                     context.Sites.Add
                         (new Site
                         {
-                            Name="habr",
-                            Domain="habr.com"
+                            Name = "habr",
+                            Domain = "habr.com"
                         });
                     context.Sites.Add
                         (new Site

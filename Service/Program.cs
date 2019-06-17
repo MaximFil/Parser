@@ -10,6 +10,7 @@ using System.Configuration;
 using Microsoft.IdentityModel.Protocols;
 using ParserService;
 using Parser.DAL;
+using System.IO;
 
 namespace Service
 {
@@ -24,6 +25,7 @@ namespace Service
             string connectionString = ConfigurationManager.ConnectionStrings["Context"].ConnectionString;
             DbContextOptions<ApplicationDbContext> options = dbContextOptionsBuilder.UseSqlServer(connectionString).Options;
             DefaultSites.InitializeSites(options);
+
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {

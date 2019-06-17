@@ -10,8 +10,8 @@ using Parser.DAL;
 namespace Parser.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190522131939_Initial")]
-    partial class Initial
+    [Migration("20190607143721_AddUserSites")]
+    partial class AddUserSites
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,6 +38,8 @@ namespace Parser.DAL.Migrations
                     b.Property<string>("Url");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SiteId");
 
                     b.ToTable("Articles");
                 });
@@ -101,7 +103,15 @@ namespace Parser.DAL.Migrations
 
                     b.HasIndex("SiteId");
 
-                    b.ToTable("UserSite");
+                    b.ToTable("UserSites");
+                });
+
+            modelBuilder.Entity("Parser.DAL.Entities.Article", b =>
+                {
+                    b.HasOne("Parser.DAL.Entities.Site", "Site")
+                        .WithMany("Articles")
+                        .HasForeignKey("SiteId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Parser.DAL.Entities.UserArticle", b =>

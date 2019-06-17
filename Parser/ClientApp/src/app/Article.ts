@@ -3,4 +3,5 @@ export class Article {
   link: string;
   fullContent: string;
   partContent: string;
+  id: number;
 }

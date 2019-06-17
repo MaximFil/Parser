@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit {
   partSiteArticles: Site;
   isLoading: boolean = false;
   countAllNews: number;
+
   constructor(private ArticleService: ArticleService, private modalService: NgbModal) {
     this.siteArticles = [];
   }
@@ -43,8 +44,9 @@ export class HomeComponent implements OnInit {
         }))
       .subscribe(ArticlesLinks => (this.siteArticles = ArticlesLinks));
   }
+
   getPartNews(siteNumber: number) {
-    var ber: number = siteNumber;
+    var ber: number = --siteNumber;
     this.ArticleService.getPartNews(this.siteArticles[ber].idLastArticle, ++siteNumber)
       .pipe(catchError(error => {
         console.log('error occured:', error);
@@ -58,9 +60,18 @@ export class HomeComponent implements OnInit {
         }))
       .subscribe(ArticlesLinks => (this.partSiteArticles = ArticlesLinks));
   }
+
   open(Article: any) {
     const modalRef = this.modalService.open(ModalComponent);
     modalRef.componentInstance.title = Article.title;
     modalRef.componentInstance.content = Article.fullContent;
+  }
+
+  refresh(): void {
+    window.location.reload();
+  }
+
+  saveShowArticle(idArticle: number, numberSite: number, numberArticle: number, idLastArticle: number) {
+    this.ArticleService.saveShowArticles(idArticle).subscribe();
   }
 }

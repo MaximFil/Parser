@@ -2,6 +2,7 @@ import { Article } from './Article';
 
 export class Site {
   articles: Array<Article>;
-  partNumber: number;
   idLastArticle: number;
+  nameSite: string;
+  siteId: number;
 }
