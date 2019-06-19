@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalComponent } from '../modal/modal.component';
 import { Site } from '../Site';
 import { Observable, of } from 'rxjs';
+import { Article } from '../Article';
 
 @Component({
   selector: 'app-home',
@@ -26,8 +27,8 @@ export class HomeComponent implements OnInit {
 
   getSites(): void {
     this.articleService.getSites()
-      .pipe(catchError(this.handleError<any>(Error))
-        , finalize(() => {
+      .pipe(catchError(this.handleError<any>(Error)),
+         finalize(() => {
           this.isLoaded = true;
         }))
       .subscribe(sites => (this.sites = sites));
@@ -36,8 +37,8 @@ export class HomeComponent implements OnInit {
   getMoreArticles(siteId: number, siteNumber: number) {
     var partSiteArticles: Site;
     this.articleService.getMoreArticles(this.sites[siteNumber].idLastArticle, siteId)
-      .pipe(catchError(this.handleError<any>(Error))
-        , finalize(() => {
+      .pipe(catchError(this.handleError<any>(Error)),
+         finalize(() => {
           for (let item of partSiteArticles.articles) {
             this.sites[siteNumber].articles.push(item);
           }
@@ -52,14 +53,29 @@ export class HomeComponent implements OnInit {
     modalRef.componentInstance.content = article.fullContent;
   }
 
-  saveShowArticle(idArticle: number) {
-    this.articleService.saveShowArticle(idArticle).subscribe();
-  }
-
   handleError<T>(result?: T) {
     return (error: any): Observable<T> => {
       console.error(error);
       return of(result as T);
     };
+  }
+
+  deleteArticle(idArticle: number, numberSite:number,numberArticle:number, idLastArticle:number, idSite) {
+    this.articleService.deleteArticle(idArticle).subscribe();
+    this.getArticle(numberSite, numberArticle, idLastArticle, idSite);
+  }
+
+  getArticle(numberSite: number, numberArticle: number, idLastArticle: number, idSite: number) {
+    var siteArticle: Article;
+    this.sites[numberSite].articles.splice(numberArticle, 1);
+    this.articleService.getArticle(idSite, idLastArticle)
+      .pipe(catchError(this.handleError<any>(Error)),
+        finalize(() => {
+          if (siteArticle.link.length > 0) {
+            this.sites[numberSite].articles.push(siteArticle);
+            this.sites[numberSite].idLastArticle = siteArticle.id;
+          }
+        }))
+      .subscribe(article => siteArticle = article);       
   }
 }

@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<h1>Parser</h1>
-
 <html>
 <body>
   <div *ngIf="isLoaded==false; then loadBlock else elseLoadBlock"></div>
@@ -8,34 +6,46 @@
     <mat-spinner *ngIf="isLoaded==false" mode="indeterminate" color="warn" class="center"></mat-spinner>
   </ng-template>
   <ng-template #elseLoadBlock>
-    <div *ngFor="let items of sites;let i = index">
-      <h3>{{items.nameSite}}</h3>
-      <div *ngIf="items.articles.length>0; then thenBlock else elseBlock"></div>
-      
-      <ng-template #thenBlock>
-        <div class="main_block">        
+    <div *ngFor="let items of sites;let numberSite = index" style="background-color: #E8EAE9;">
+      <div class="main_block">
+        <div class="name_site_block">
+          <h3>
+            {{items.nameSite}}
+          </h3>
+          <br />
+        </div>
+        <br />
+        <div *ngIf="items.articles.length>0; then thenBlock else elseBlock"></div>
+
+        <ng-template #thenBlock>
+
           <div class="container">
             <div class="row">
-              <div class="col-sm-4 small_block" *ngFor="let item of items.articles;let j = index">
+              <div class="col-sm-4 small_block" *ngFor="let item of items.articles;let numberArticle = index">
                 <a href={{item.link}} target="_blank" (click)="saveShowArticle(item.id)">
                   {{item.title}}
                 </a>
+                <p class="richt_up sticky-top cursor_pointer" (click)="deleteArticle(item.id, numberSite, numberArticle, items.idLastArticle, items.siteId)">&#10006;</p>
                 <p>{{item.partContent}}</p>
                 <br>
-                <button class="btn btn-link richt_down" (click)="open(item)">More</button>
+                <button class="btn btn-info btn_more richt_down" (click)="open(item)">More</button>
+
               </div>
             </div>
           </div>
+          <br />
           <form>
-            <button (click)="getMoreArticles(items.siteId,i)" type="button" class="btn btn-secondary center">More articles</button>
+            <button (click)="getMoreArticles(items.siteId,numberSite)" type="button" class="btn btn-secondary btn_more_articles center">More articles</button>
           </form>
-        </div>
-      </ng-template>
+
+        </ng-template>
+      </div>
+      <br>
       <ng-template #elseBlock>
         <{{item.nameSite}}>
-        <div class="main_block">
-          <p>Articles Not found</p>
-        </div>
+          <div class="main_block">
+            <p>Articles Not found</p>
+          </div>
       </ng-template>
     </div>
   </ng-template>

@@ -77,18 +77,76 @@ namespace Parser.Controllers
         }
 
         [HttpPost("[action]")]
-        public IActionResult SaveShowArticle([FromBody] int idArticle)
+        public IActionResult DeleteArticle([FromBody]int idArticle)
         {
             using (_context)
             {
                 if (ModelState.IsValid)
-                {
-                    _context.UserArticles.Add(new UserArticle { UserId=_context.Users.FirstOrDefault().Id, ArticleId=idArticle});
+                {              
+                    var userArticle = _context.UserArticles.FirstOrDefault(u => u.ArticleId == idArticle);
+                    if (userArticle==null)
+                    {
+                        _context.UserArticles.Add(
+                            new UserArticle
+                            {
+                                UserId = _context.Users.First().Id,
+                                ArticleId = idArticle,
+                                Deleted = true
+                            });
+                    }
+                    else
+                    {
+                        _context.UserArticles.First(u => u.ArticleId == idArticle).Deleted = true;
+                    }
                     _context.SaveChanges();
                     return Ok();
-                }
+                }            
             }
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("[action]")]
+        public ArticleViewModel GetArticle(int idLastArticle, int idSite)
+        {
+            var articleSite = new ArticleViewModel();
+            Article article;
+            using (_context)
+            {
+                var showArticle = _context.Users.FirstOrDefault().ViewSetting;
+                var userId = _context.Users.FirstOrDefault().Id;
+                if (showArticle == false)
+                {
+                    article = _context.Articles
+                        .Include(a => a.UserArticles)
+                        .Where(a => a.SiteId == idSite)
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.UserId == userId) == null)
+                        .Where(a => a.Id < idLastArticle)
+                        .OrderByDescending(a=>a.Id)
+                        .FirstOrDefault();
+                }
+                else
+                {
+                    article = _context.Articles
+                        .Where(a => a.SiteId == idSite)
+                        .Where(a => a.Id < idLastArticle)
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true) == null)
+                        .OrderByDescending(a => a.Id)
+                        .FirstOrDefault();
+                }
+                if (article!=null)
+                {
+                    articleSite =
+                        new ArticleViewModel
+                        {
+                            FullContent = article.Content,
+                            Link = article.Url,
+                            PartContent = article.PartContent,
+                            Title = article.Title,
+                            Id = article.Id
+                        };
+                }
+            }
+            return articleSite;
         }
     }
 }

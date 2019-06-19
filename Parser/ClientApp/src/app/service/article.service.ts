@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Component } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, ResponseType } from '@angular/http';
 import { Observable } from 'rxjs';
 import { Site } from '../Site';
 import { NameSite } from '../NameSite';
+import { Article } from '../Article';
 @Injectable({
     providedIn: 'root',
 })
@@ -35,7 +36,11 @@ export class ArticleService {
     return this.http.post('https://localhost:44398/api/Help/SaveFilters?showArticles=' + showArticle, nameSite, { responseType: 'text' });
   }
 
-  saveShowArticle(idArticle: number) {
-    return this.http.post('https://localhost:44398/api/Help/SaveShowArticle', idArticle, { responseType: 'text' });
+  deleteArticle(idArticle: number) {
+    return this.http.post('https://localhost:44398/api/Help/DeleteArticle', idArticle, { responseType: 'text' });
+  }
+
+  getArticle(idSite: number, idLastArticle: number): Observable<Article> {
+    return this.http.get<Article>('https://localhost:44398/api/Help/GetArticle?idLastArticle=' + idLastArticle+'&idSite='+idSite);
   }
 }

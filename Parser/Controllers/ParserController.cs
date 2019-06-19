@@ -5,6 +5,7 @@ using Parser.ViewModels;
 using Parser.DAL.Entities;
 using Parser.DAL;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace Parser.Controllers
 {
@@ -35,17 +36,17 @@ namespace Parser.Controllers
                         .Include(a => a.UserArticles)
                         .Include(a=>a.Site)
                         .Where(a => userSitesIds.Contains(a.SiteId))
-                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)
+                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)                       
                         .OrderBy(t => t.SiteId)
                         .GroupBy(t => t.SiteId)
-                        .ToList();
-                        
+                        .ToList();                      
                 }
                 else
                 {
                     dbArticles = _context.Articles
                         .Include(a => a.Site)
                         .Where(a => userSitesIds.Contains(a.SiteId))
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true) == null)
                         .OrderBy(a => a.SiteId)
                         .GroupBy(a => a.SiteId)
                         .ToList();
@@ -102,8 +103,10 @@ namespace Parser.Controllers
                 else
                 {
                     dbArticles = _context.Articles
-                        .Where(a => a.SiteId==siteId)
+                        .Include(a => a.UserArticles)
+                        .Where(a => a.SiteId == siteId)
                         .Where(a => a.Id < idLastArticle)
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true) == null)
                         .OrderByDescending(a => a.Id)
                         .Take(_partSize);
                 }
