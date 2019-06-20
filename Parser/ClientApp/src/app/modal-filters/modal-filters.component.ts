@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import { ArticleService } from '../service/article.service';
 import { NameSite } from '../NameSite';
-import { HomeComponent } from '../home/home.component';
+import { HomeComponent } from '../main/main.component';
 @Component({
     selector: 'modal-show',
     templateUrl: './modal-filters-template.html',

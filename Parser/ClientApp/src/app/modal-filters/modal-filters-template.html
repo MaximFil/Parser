@@ -10,11 +10,11 @@
   <div class="row">
     <div class="col">
       <h5>Sites</h5>
-      <div *ngFor="let items of nameSitesUser" class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id={{items.nameSite}} [(ngModel)]="items.select"
-               [attr.checked]="items.select==true?true:null">
-        <label class="custom-control-label" for={{items.nameSite}}>
-          {{items.nameSite}}
+      <div *ngFor="let site of nameSitesUser" class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id={{site.nameSite}} [(ngModel)]="site.select"
+               [attr.checked]="site.select==true?true:null">
+        <label class="custom-control-label" for={{site.nameSite}}>
+          {{site.nameSite}}
         </label>
       </div>
     </div>

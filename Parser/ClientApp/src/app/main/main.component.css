@@ -77,3 +77,7 @@ body {
   background-color: #849FA5;
   border-color: #849FA5;
 }
+mat-spinner path {
+  stroke: #789296;
+  color: #789296;
+}

@@ -8,9 +8,7 @@ import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalFiltersComponent } from './modal-filters/modal-filters.component';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { HomeComponent } from './main/main.component';
 import { MatProgressSpinnerModule } from '@angular/material';
 import { ModalComponent } from './modal/modal.component';
 
@@ -19,8 +17,6 @@ import { ModalComponent } from './modal/modal.component';
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
     ModalComponent,
     ModalFiltersComponent
   ],
@@ -31,9 +27,7 @@ import { ModalComponent } from './modal/modal.component';
     MatProgressSpinnerModule,
     NgbModule.forRoot(),
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: '', component: HomeComponent, pathMatch: 'full' }
     ]),
   ],
   exports: [AppComponent],

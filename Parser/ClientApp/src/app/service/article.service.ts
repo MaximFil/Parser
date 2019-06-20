@@ -43,4 +43,7 @@ export class ArticleService {
   getArticle(idSite: number, idLastArticle: number): Observable<Article> {
     return this.http.get<Article>('https://localhost:44398/api/Help/GetArticle?idLastArticle=' + idLastArticle+'&idSite='+idSite);
   }
+  saveShowenArticle(articleId: number) {
+    return this.http.post('https://localhost:44398/api/Help/SaveShowenArticle', articleId, { responseType:'text' });
+}
 }

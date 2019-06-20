@@ -46,7 +46,7 @@ namespace Parser.Controllers
                     dbArticles = _context.Articles
                         .Include(a => a.Site)
                         .Where(a => userSitesIds.Contains(a.SiteId))
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true) == null)
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId==userId) == null)
                         .OrderBy(a => a.SiteId)
                         .GroupBy(a => a.SiteId)
                         .ToList();
@@ -106,7 +106,7 @@ namespace Parser.Controllers
                         .Include(a => a.UserArticles)
                         .Where(a => a.SiteId == siteId)
                         .Where(a => a.Id < idLastArticle)
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true) == null)
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId==userId) == null)
                         .OrderByDescending(a => a.Id)
                         .Take(_partSize);
                 }

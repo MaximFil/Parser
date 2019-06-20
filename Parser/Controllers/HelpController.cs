@@ -24,7 +24,11 @@ namespace Parser.Controllers
             var nameSitesUser = new List<NameSiteViewModel>();
             using (_context)
             {
-                var userSitesIds = _context.Users.Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
+                var userSitesIds = _context.Users
+                    .Include(u => u.UserSites)
+                    .FirstOrDefault()
+                    .UserSites
+                    .Select(s => s.SiteId);
                 var sites = _context.Sites.ToList();
                 foreach (var site in sites)
                 {
@@ -40,6 +44,33 @@ namespace Parser.Controllers
                 }
             }
             return nameSitesUser;
+        }
+
+        [HttpPost("[action]")]
+        public IActionResult SaveShowenArticle([FromBody] int articleId)
+        {
+            using (_context)
+            {
+                var userId = _context.Users.FirstOrDefault().Id;
+                if (ModelState.IsValid)
+                {
+                    var article = _context.UserArticles
+                        .FirstOrDefault(u=>u.ArticleId==articleId && u.UserId==userId);
+                    if (article == null)
+                    {                    
+                    _context.UserArticles.Add(
+                        new UserArticle
+                        {
+                            UserId = _context.Users.First().Id,
+                            ArticleId = articleId,
+                            Deleted = false
+                        });
+                        _context.SaveChanges();
+                    }
+                    return Ok();
+                }
+                return BadRequest(ModelState);
+            }
         }
 
         [HttpGet("[action]")]
@@ -129,7 +160,7 @@ namespace Parser.Controllers
                     article = _context.Articles
                         .Where(a => a.SiteId == idSite)
                         .Where(a => a.Id < idLastArticle)
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true) == null)
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId==userId) == null)
                         .OrderByDescending(a => a.Id)
                         .FirstOrDefault();
                 }
