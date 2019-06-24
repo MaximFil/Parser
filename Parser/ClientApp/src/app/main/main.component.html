@@ -6,26 +6,28 @@
     <mat-spinner *ngIf="!isLoaded" mode="indeterminate" class="center"></mat-spinner>
   </ng-template>
   <ng-template #showContent>
-    <div *ngFor="let site of sites;let numberSite = index" style="background-color: #E8EAE9;">
+    <div *ngFor="let site of sites;let numberSite = index" class="back_color_block">
       <div class="main_block">
         <div class="name_site_block">
-          <h3>
+          <h3 class="title_site_name_padding">
             {{site.nameSite}}
           </h3>
-          <br />
         </div>
-        <br />
         <div *ngIf="site.articles.length > 0; then showSite else showArticlesNotFoundMessage"></div>
 
         <ng-template #showSite>
 
           <div class="container">
             <div class="row">
-              <div class="col-sm-4 small_block" *ngFor="let article of site.articles;let numberArticle = index">
-                <a href={{article.link}} target="_blank" (click)="saveShowenArticle(article.id)">
-                  {{article.title}}
-                </a>
-                <p class="richt_up sticky-top cursor_pointer" (click)="deleteArticle(article.id, numberSite, numberArticle, site.idLastArticle, site.siteId)">&#10006;</p>
+              <div class="col-sm-4 col_sm_4 small_block a_padding" *ngFor="let article of site.articles;let numberArticle = index">
+                <div class="a_padding">
+                  <a href={{article.link}} target="_blank" (click)="saveShowenArticle(article.id)">
+                    {{article.title}}
+                  </a>
+                </div>
+                <div class="richt_up sticky-top">
+                  <p class="cursor_pointer" (click)="deleteArticle(article.id, numberSite, numberArticle, site.idLastArticle, site.siteId)">&#10006;</p>
+                </div>
                 <p>{{article.partContent}}</p>
                 <br>
                 <button class="btn btn-info btn_more richt_down" (click)="open(article)">More</button>
@@ -33,7 +35,6 @@
               </div>
             </div>
           </div>
-          <br />
           <form>
             <button (click)="getMoreArticles(site.siteId,numberSite)" type="button" class="btn btn-secondary btn_more_articles center">More articles</button>
           </form>

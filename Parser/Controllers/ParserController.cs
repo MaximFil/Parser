@@ -6,6 +6,7 @@ using Parser.DAL.Entities;
 using Parser.DAL;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using System.Threading;
 
 namespace Parser.Controllers
 {

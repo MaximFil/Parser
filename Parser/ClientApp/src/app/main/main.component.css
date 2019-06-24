@@ -21,6 +21,11 @@ li {
   color: #7C969C;
   border: 3px solid #BECCD0;
   border-radius:20px 20px 7px 20px;
+  margin:5px;
+}
+.col_sm_4 {
+  flex: 0 0 32.416856%;
+  max-width: 32.416856%;
 }
 .location_link {
   text-align: center;
@@ -66,8 +71,8 @@ height: 50%;
 a {
   color: #325158;
 }
-body {
-  background-color: #F8F3F3;
+.a_padding{
+  padding-right:20px;
 }
 .btn_more {
   background-color: #94B0B7;
@@ -80,4 +85,14 @@ body {
 mat-spinner path {
   stroke: #789296;
   color: #789296;
+}
+.title_site_name_padding{
+  padding-bottom:15px;
+  padding-top:15px;
+}
+body {
+  background-color: #E8EAE9;
+}
+.back_color_block {
+  background-color: #E8EAE9;
 }

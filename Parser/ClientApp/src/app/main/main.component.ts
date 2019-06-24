@@ -42,8 +42,8 @@ export class HomeComponent implements OnInit {
             }))
             .subscribe(part => (partSite = part));
     }
-    open(article: any) {
-        const modalRef = this.modalService.open(ModalComponent);
+  open(article: any) {
+    const modalRef = this.modalService.open(ModalComponent, { size: 'lg' });
         modalRef.componentInstance.title = article.title;
         modalRef.componentInstance.content = article.fullContent;
     }
