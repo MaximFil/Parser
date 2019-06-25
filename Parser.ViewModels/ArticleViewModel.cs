@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Parser.ViewModels1
+namespace Parser.ViewModels
 {
     public class ArticleViewModel
     {
@@ -12,6 +13,5 @@ namespace Parser.ViewModels1
         public string FullContent { get; set; }
         public string PartContent { get; set; }
         public int Id { get; set; }
-
     }
 }

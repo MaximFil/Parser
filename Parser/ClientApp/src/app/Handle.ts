@@ -1,7 +1,5 @@
-import { ErrorHandler, Injectable, OnInit, Component } from '@angular/core';
+import { Injectable, Component } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { error } from 'protractor';
 import { Http } from '@angular/http';
 
 @Injectable({

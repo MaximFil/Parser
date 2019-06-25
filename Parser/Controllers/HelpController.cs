@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Parser.DAL;
 using Parser.DAL.Entities;
+using Parser.Repository.Repositories;
 using Parser.ViewModels;
 
 namespace Parser.Controllers
@@ -12,10 +13,22 @@ namespace Parser.Controllers
     public class HelpController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserRepository _userRepository;
+        private readonly SiteRepository _siteRepository;
+        private readonly ArticleRepository _articleRepository;
+        private readonly UserSiteRepository _userSiteRepository;
+        private readonly UserArticleRepository _userArticleRepository;
+        private readonly Repository.Repositories.Repository _repository;
 
         public HelpController(ApplicationDbContext context)
         {
             _context = context;
+            _userRepository = new UserRepository(_context);
+            _siteRepository = new SiteRepository(_context);
+            _articleRepository = new ArticleRepository(_context);
+            _userSiteRepository = new UserSiteRepository(_context);
+            _userArticleRepository = new UserArticleRepository(_context);
+            _repository = new Repository.Repositories.Repository(_context); 
         }
 
         [HttpGet("[action]")]
@@ -24,12 +37,12 @@ namespace Parser.Controllers
             var nameSitesUser = new List<NameSiteViewModel>();
             using (_context)
             {
-                var userSitesIds = _context.Users
+                var userSitesIds = _userRepository.GetUser()
                     .Include(u => u.UserSites)
                     .FirstOrDefault()
                     .UserSites
                     .Select(s => s.SiteId);
-                var sites = _context.Sites.ToList();
+                var sites = _siteRepository.GetSites();
                 foreach (var site in sites)
                 {
                     var select = false;
@@ -51,21 +64,21 @@ namespace Parser.Controllers
         {
             using (_context)
             {
-                var userId = _context.Users.FirstOrDefault().Id;
+                var userId = _userRepository.GetUserId();
                 if (ModelState.IsValid)
                 {
-                    var article = _context.UserArticles
+                    var article = _userArticleRepository.GetUserArticles()
                         .FirstOrDefault(u=>u.ArticleId==articleId && u.UserId==userId);
                     if (article == null)
                     {                    
-                    _context.UserArticles.Add(
+                    _userArticleRepository.AddUserArticle(
                         new UserArticle
                         {
-                            UserId = _context.Users.First().Id,
+                            UserId = userId,
                             ArticleId = articleId,
                             Deleted = false
                         });
-                        _context.SaveChanges();
+                        _repository.SaveChanges();
                     }
                     return Ok();
                 }
@@ -76,7 +89,7 @@ namespace Parser.Controllers
         [HttpGet("[action]")]
         public bool GetValueShow()
         {
-            return _context.Users.First().ViewSetting;
+            return _userRepository.GetUserViewSetting();
         }
 
         [HttpPost("[action]")]
@@ -84,14 +97,14 @@ namespace Parser.Controllers
         {
             using (_context)
             {
-                _context.UserSites.RemoveRange(_context.UserSites);
+                _userSiteRepository.RemoveRange();
                 if (ModelState.IsValid)
                 {
                     foreach (var nameSite in nameSites)
                     {
                         if (nameSite.Select == true)
                         {
-                            _context.UserSites.Add(
+                            _userSiteRepository.Add(
                                 new UserSite
                                 {
                                     UserId = _context.Users.First().Id,
@@ -99,8 +112,8 @@ namespace Parser.Controllers
                                 });
                         }
                     }
-                    _context.Users.First().ViewSetting = showArticles;
-                    _context.SaveChanges();
+                    _userRepository.GetUser().First().ViewSetting = showArticles;
+                    _repository.SaveChanges();
                     return Ok();
                 }
             }
@@ -114,10 +127,10 @@ namespace Parser.Controllers
             {
                 if (ModelState.IsValid)
                 {              
-                    var userArticle = _context.UserArticles.FirstOrDefault(u => u.ArticleId == idArticle);
+                    var userArticle = _userArticleRepository.GetUserArticles().FirstOrDefault(u => u.ArticleId == idArticle);
                     if (userArticle==null)
                     {
-                        _context.UserArticles.Add(
+                        _userArticleRepository.AddUserArticle(
                             new UserArticle
                             {
                                 UserId = _context.Users.First().Id,
@@ -127,9 +140,9 @@ namespace Parser.Controllers
                     }
                     else
                     {
-                        _context.UserArticles.First(u => u.ArticleId == idArticle).Deleted = true;
+                        _userArticleRepository.GetUserArticles().First(u => u.ArticleId == idArticle).Deleted = true;
                     }
-                    _context.SaveChanges();
+                    _repository.SaveChanges();
                     return Ok();
                 }            
             }
@@ -143,11 +156,11 @@ namespace Parser.Controllers
             Article article;
             using (_context)
             {
-                var showArticle = _context.Users.FirstOrDefault().ViewSetting;
-                var userId = _context.Users.FirstOrDefault().Id;
+                var showArticle = _userRepository.GetUserViewSetting();
+                var userId = _userRepository.GetUserId();
                 if (showArticle == false)
                 {
-                    article = _context.Articles
+                    article = _articleRepository.GetArticles()
                         .Include(a => a.UserArticles)
                         .Where(a => a.SiteId == idSite)
                         .Where(a => a.UserArticles.FirstOrDefault(u => u.UserId == userId) == null)
@@ -157,7 +170,7 @@ namespace Parser.Controllers
                 }
                 else
                 {
-                    article = _context.Articles
+                    article = _articleRepository.GetArticles()
                         .Where(a => a.SiteId == idSite)
                         .Where(a => a.Id < idLastArticle)
                         .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId==userId) == null)

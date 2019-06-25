@@ -10,9 +10,8 @@ import { HomeComponent } from '../main/main.component';
 })
 export class ModalFiltersComponent implements OnInit {
   nameSitesUser: Array<NameSite>;
-  homeComponent: HomeComponent;
   showArticle: boolean;
-  constructor(private activeModal: NgbActiveModal, private articleService: ArticleService) { }
+  constructor(private activeModal: NgbActiveModal, private articleService: ArticleService, private homeComponent: HomeComponent) { }
   ngOnInit() {
     this.getValueShow();
     this.getNameSitesUser();   
@@ -25,7 +24,7 @@ export class ModalFiltersComponent implements OnInit {
     
     this.articleService.saveFilters(this.nameSitesUser, this.showArticle).subscribe();
     this.activeModal.close();
-   // this.homeComponent.getNews();
+    //this.homeComponent.ngOnInit();
     window.location.reload();
   }
   getValueShow() {

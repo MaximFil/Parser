@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserService", "Service\Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.DAL", "Parser.DAL\Parser.DAL.csproj", "{EFFCF19E-537D-46F3-890C-5CB9C03D1414}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.Repository", "Parser.Repository\Parser.Repository.csproj", "{0A1DCA30-482E-4720-B7E0-54E030E9CFA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.ViewModels", "Parser.ViewModels\Parser.ViewModels.csproj", "{4C98F5FF-5383-4582-AF99-1E41205038DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{EFFCF19E-537D-46F3-890C-5CB9C03D1414}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFFCF19E-537D-46F3-890C-5CB9C03D1414}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFFCF19E-537D-46F3-890C-5CB9C03D1414}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A1DCA30-482E-4720-B7E0-54E030E9CFA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1DCA30-482E-4720-B7E0-54E030E9CFA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1DCA30-482E-4720-B7E0-54E030E9CFA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1DCA30-482E-4720-B7E0-54E030E9CFA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C98F5FF-5383-4582-AF99-1E41205038DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C98F5FF-5383-4582-AF99-1E41205038DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C98F5FF-5383-4582-AF99-1E41205038DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C98F5FF-5383-4582-AF99-1E41205038DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

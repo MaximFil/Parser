@@ -7,6 +7,7 @@ using Parser.DAL;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Threading;
+using Parser.Repository.Repositories;
 
 namespace Parser.Controllers
 {
@@ -14,48 +15,54 @@ namespace Parser.Controllers
     public class ParserController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserRepository _userRepository;
+        private readonly ArticleRepository _articleRepository;
         const int _partSize= 9;
 
         public ParserController(ApplicationDbContext context)
         {
             _context = context;
+            _userRepository = new UserRepository(_context);
+            _articleRepository = new ArticleRepository(_context);
         }
 
         [HttpGet("[action]")]
         public List<SiteViewModel> GetSites()
         {
             var sites = new List<SiteViewModel>();
-            IEnumerable<IGrouping<int, Article>> dbArticles;
+            IEnumerable<IGrouping<int, Article>> siteArticles;
             using (_context)
             {
-                var userSitesIds = _context.Users.Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
-                var showArticle = _context.Users.FirstOrDefault().ViewSetting;
-                var userId = _context.Users.FirstOrDefault().Id;
-                if (showArticle == false)
+                var userSitesIds = _userRepository.GetUserSitesIds();
+                var showArticle = _userRepository.GetUserViewSetting();
+                var userId = _userRepository.GetUserId();
+                var allArticles = _articleRepository.GetArticles();
+                if (showArticle)
                 {
-                    dbArticles = _context.Articles
+                    siteArticles = allArticles
                         .Include(a => a.UserArticles)
-                        .Include(a=>a.Site)
-                        .Where(a => userSitesIds.Contains(a.SiteId))
-                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)                       
-                        .OrderBy(t => t.SiteId)
-                        .GroupBy(t => t.SiteId)
-                        .ToList();                      
-                }
-                else
-                {
-                    dbArticles = _context.Articles
                         .Include(a => a.Site)
                         .Where(a => userSitesIds.Contains(a.SiteId))
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId==userId) == null)
+                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId == userId) == null)
                         .OrderBy(a => a.SiteId)
                         .GroupBy(a => a.SiteId)
                         .ToList();
                 }
-                foreach (var site in dbArticles)
+                else
+                {
+                    siteArticles = allArticles
+                        .Include(a => a.UserArticles)
+                        .Include(a => a.Site)
+                        .Where(a => userSitesIds.Contains(a.SiteId))
+                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)
+                        .OrderBy(a => a.SiteId)
+                        .GroupBy(a => a.SiteId)
+                        .ToList();
+                }
+                foreach (var site in siteArticles)
                 {
                     var articles = new List<ArticleViewModel>();
-                    foreach (var article in site.OrderByDescending(t => t.Id).Take(_partSize))
+                    foreach (var article in site.OrderByDescending(s => s.Id).Take(_partSize))
                     {
                         articles.Add(
                             new ArticleViewModel
@@ -87,13 +94,14 @@ namespace Parser.Controllers
             IQueryable<Article> dbArticles;
             using (_context)
             {
-                var userSitesIds = _context.Users.Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
-                var showArticle = _context.Users.FirstOrDefault().ViewSetting;
-                var userId = _context.Users.FirstOrDefault().Id;
+                var userSitesIds = _userRepository.GetUser().Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
+                var showArticle = _userRepository.GetUserViewSetting();
+                var userId = _userRepository.GetUserId();
+                var articles = _articleRepository.GetArticles();
 
                 if (showArticle == false)
                 {
-                    dbArticles = _context.Articles
+                    dbArticles = articles
                         .Include(a => a.UserArticles)
                         .Where(a => a.SiteId==siteId)
                         .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)
@@ -103,7 +111,7 @@ namespace Parser.Controllers
                 }
                 else
                 {
-                    dbArticles = _context.Articles
+                    dbArticles = articles
                         .Include(a => a.UserArticles)
                         .Where(a => a.SiteId == siteId)
                         .Where(a => a.Id < idLastArticle)

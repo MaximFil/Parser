@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Parser.DAL;
 using Parser.DAL.Entities;
+using Parser.Repository.Repositories;
 using System.IO;
 
 namespace Parser
@@ -14,6 +15,7 @@ namespace Parser
     {
         public static void InitializeUserSites(IServiceProvider serviceProvider)
         {
+            
             var user = new User
             {
                     FirstName = "Maxim",
@@ -22,30 +24,18 @@ namespace Parser
                     ViewSetting = true
                 };
             using (var context = new ApplicationDbContext(serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
-            {              
-                if (!context.Users.Any())
-                {
-                    context.Users.Add(user);                    
-                }
-                var sites = context.Sites.ToList();
+            {
+                var siteRepository = new SiteRepository(context);////         
+                var userReposotiry = new UserRepository(context);////
+                var userSiteRepository = new UserSiteRepository(context);
+                var repository = new Repository.Repositories.Repository(context);
+                userReposotiry.AddDefaultUser(user);////
+                var sites = siteRepository.GetSites();////
                 foreach (var site in sites)
                 {
-                    if (!context.UserSites.Any())
-                    {
-                        context.UserSites.Add(new UserSite { UserId = user.Id, SiteId = site.Id });
-                    }
+                    userSiteRepository.AddDefaultUserSites(new UserSite { UserId = user.Id, SiteId = site.Id });
                 }
-                //var articles = context.Articles.ToList();
-                //var users = context.Users.FirstOrDefault();
-                //foreach (var article in articles)
-                //{
-                //    var dbArticle = context.UserArticles.FirstOrDefault(t=>t.ArticleId==article.Id);
-                //    if (dbArticle == null)
-                //    {
-                //        context.UserArticles.Add(new UserArticle { UserId = users.Id, ArticleId = article.Id, Deleted = false });
-                //    }
-                //}
-                context.SaveChanges();    
+                repository.SaveChanges();    
             }
         }
     }

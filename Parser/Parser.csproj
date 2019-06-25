@@ -62,7 +62,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Parser.DAL\Parser.DAL.csproj" />
+    <ProjectReference Include="..\Parser.Repository\Parser.Repository.csproj" />
+    <ProjectReference Include="..\Parser.ViewModels\Parser.ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>

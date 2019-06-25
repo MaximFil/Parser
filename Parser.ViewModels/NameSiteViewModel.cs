@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Parser.ViewModels1
+namespace Parser.ViewModels
 {
     public class NameSiteViewModel
     {

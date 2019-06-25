@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Parser.ViewModels1
+namespace Parser.ViewModels
 {
     public class SiteViewModel
     {
@@ -12,7 +13,7 @@ namespace Parser.ViewModels1
         public int IdLastArticle { get; set; }
         public string NameSite { get; set; }
         public int SiteId { get; set; }
-        
+
         public SiteViewModel()
         {
             Articles = new List<ArticleViewModel>();
