@@ -314,6 +314,10 @@
       <Project>{effcf19e-537d-46f3-890c-5cb9c03d1414}</Project>
       <Name>Parser.DAL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Parser.Repository\Parser.Repository.csproj">
+      <Project>{0a1dca30-482e-4720-b7e0-54e030e9cfa0}</Project>
+      <Name>Parser.Repository</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

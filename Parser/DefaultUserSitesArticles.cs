@@ -30,7 +30,7 @@ namespace Parser
                 var userSiteRepository = new UserSiteRepository(context);
                 var repository = new Repository.Repositories.Repository(context);
                 userReposotiry.AddDefaultUser(user);////
-                var sites = siteRepository.GetSites();////
+                var sites = siteRepository.GetSites().ToList();////
                 foreach (var site in sites)
                 {
                     userSiteRepository.AddDefaultUserSites(new UserSite { UserId = user.Id, SiteId = site.Id });

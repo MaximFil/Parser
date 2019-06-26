@@ -18,14 +18,29 @@ namespace Parser.Repository.Repositories
             _context = context;
         }
 
-        public IQueryable<UserArticle> GetUserArticles()
+        public DbSet<UserArticle> GetUserArticles()
         {
             return _context.UserArticles;
         }
 
+        public UserArticle GetUserArticle(int userId, int articleId)
+        {
+            return GetUserArticles()
+                .FirstOrDefault(u => u.ArticleId == articleId && u.UserId == userId);
+        }
+
         public void AddUserArticle(UserArticle userArticle)
         {
-            _context.UserArticles.Add(userArticle);
+            GetUserArticles().Add(userArticle);
+        }
+        public UserArticle GetUserArticle(int articleId)
+        {
+            return GetUserArticles()
+                .FirstOrDefault(u => u.ArticleId == articleId);
+        }
+        public void SetDeletedForArticleId(bool deleted, int articleId)
+        {
+            GetUserArticles().First(u => u.ArticleId == articleId).Deleted = deleted;
         }
     }
 }

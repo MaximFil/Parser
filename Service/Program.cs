@@ -24,7 +24,7 @@ namespace Service
             DbContextOptionsBuilder<ApplicationDbContext> dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             string connectionString = ConfigurationManager.ConnectionStrings["Context"].ConnectionString;
             DbContextOptions<ApplicationDbContext> options = dbContextOptionsBuilder.UseSqlServer(connectionString).Options;
-            //DefaultSites.InitializeSites(options);
+            DefaultSites.InitializeSites(options);
 
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]

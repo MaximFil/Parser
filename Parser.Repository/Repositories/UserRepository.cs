@@ -46,5 +46,9 @@ namespace Parser.Repository.Repositories
         {
             return _context.Users;
         }
+        public void SetShowArticle(bool showArticle)
+        {
+            GetUser().First().ViewSetting = showArticle;
+        }
     }
 }

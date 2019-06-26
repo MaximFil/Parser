@@ -36,33 +36,19 @@ namespace Parser.Controllers
                 var userSitesIds = _userRepository.GetUserSitesIds();
                 var showArticle = _userRepository.GetUserViewSetting();
                 var userId = _userRepository.GetUserId();
-                var allArticles = _articleRepository.GetArticles();
                 if (showArticle)
                 {
-                    siteArticles = allArticles
-                        .Include(a => a.UserArticles)
-                        .Include(a => a.Site)
-                        .Where(a => userSitesIds.Contains(a.SiteId))
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId == userId) == null)
-                        .OrderBy(a => a.SiteId)
-                        .GroupBy(a => a.SiteId)
-                        .ToList();
+                    siteArticles = _articleRepository.GetShowArticlesUser(userSitesIds,userId).ToList();                       
                 }
                 else
                 {
-                    siteArticles = allArticles
-                        .Include(a => a.UserArticles)
-                        .Include(a => a.Site)
-                        .Where(a => userSitesIds.Contains(a.SiteId))
-                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)
-                        .OrderBy(a => a.SiteId)
-                        .GroupBy(a => a.SiteId)
-                        .ToList();
+                    siteArticles = _articleRepository.GetAllArticlesUser(userSitesIds,userId).ToList();
                 }
                 foreach (var site in siteArticles)
                 {
                     var articles = new List<ArticleViewModel>();
-                    foreach (var article in site.OrderByDescending(s => s.Id).Take(_partSize))
+                    var _site = _articleRepository.GetPartArticlesSite(site, _partSize);
+                    foreach (var article in _site)
                     {
                         articles.Add(
                             new ArticleViewModel
@@ -78,9 +64,9 @@ namespace Parser.Controllers
                         new SiteViewModel
                         {
                             Articles = articles,
-                            IdLastArticle = site.OrderByDescending(t => t.Id).Take(_partSize).Last().Id,
-                            NameSite = site.FirstOrDefault(t => t.SiteId == t.Site.Id).Site.Name,
-                            SiteId = site.FirstOrDefault().SiteId
+                            IdLastArticle = _articleRepository.GetLastId(site,_partSize),
+                            NameSite = _articleRepository.GetSiteName(site),
+                            SiteId = _articleRepository.GetSiteId(site)
                         });
                 }
             }
@@ -94,30 +80,18 @@ namespace Parser.Controllers
             IQueryable<Article> dbArticles;
             using (_context)
             {
-                var userSitesIds = _userRepository.GetUser().Include(u => u.UserSites).FirstOrDefault().UserSites.Select(s => s.SiteId);
+                var userSitesIds = _userRepository.GetUserSitesIds();
                 var showArticle = _userRepository.GetUserViewSetting();
                 var userId = _userRepository.GetUserId();
                 var articles = _articleRepository.GetArticles();
 
-                if (showArticle == false)
+                if (showArticle)
                 {
-                    dbArticles = articles
-                        .Include(a => a.UserArticles)
-                        .Where(a => a.SiteId==siteId)
-                        .Where(a => a.UserArticles.FirstOrDefault(f => f.UserId == userId) == null)
-                        .Where(a=>a.Id<idLastArticle)
-                        .OrderByDescending(a => a.Id)
-                        .Take(_partSize);
+                    dbArticles = _articleRepository.GetMoreShowArticles(siteId, idLastArticle, _partSize, userId);                 
                 }
                 else
                 {
-                    dbArticles = articles
-                        .Include(a => a.UserArticles)
-                        .Where(a => a.SiteId == siteId)
-                        .Where(a => a.Id < idLastArticle)
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId==userId) == null)
-                        .OrderByDescending(a => a.Id)
-                        .Take(_partSize);
+                    dbArticles = _articleRepository.GetMoreAllArticles(siteId, idLastArticle, _partSize, userId);
                 }
                 foreach (var article in dbArticles)
                 {
@@ -133,7 +107,7 @@ namespace Parser.Controllers
                 }
                 if (dbArticles.Count() > 0)
                 {
-                    siteArticles.IdLastArticle = dbArticles.Last().Id;
+                    siteArticles.IdLastArticle = _articleRepository.GetMoreLastId(dbArticles);
                 }
             }
             return siteArticles;

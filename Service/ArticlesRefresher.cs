@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Parser.Repository.Repositories;
 
 namespace Service
 {
@@ -17,12 +18,18 @@ namespace Service
         const int interval = 300000;
         private readonly DbContextOptions<ApplicationDbContext> _options;
         private readonly string _file;
+        private readonly ApplicationDbContext _context;
+        private readonly ArticleRepository _articleRepository;
+        private readonly Repository _repository;
 
         public ArticlesRefresher(DbContextOptions<ApplicationDbContext> options)
         {
             enabled = true;
             _options = options;
             _file = ConfigurationManager.AppSettings["ArticlesFile"];
+            _context = new ApplicationDbContext(_options);
+            _articleRepository = new ArticleRepository(_context);
+            _repository = new Repository(_context);
         }
 
         public async void Start()
@@ -58,17 +65,17 @@ namespace Service
             var articles = await parserHelper.GetArticles();
             display("Method Create finish parsing articles");
             display("Method Create begin refresh articles in database");
-            using (var context = new ApplicationDbContext(_options))
+            using (_context)
             {
                 foreach (var article in articles)
                 {
-                    var dbArticle = context.Articles.FirstOrDefault(a => a.Url == article.Url);
+                    var dbArticle = _articleRepository.GetArticleForUrl(article.Url);
                     if (dbArticle == null)
                     {
-                        await context.Articles.AddAsync(article);
-                    }
+                        _articleRepository.Add(article);
+                    }                   
                 }
-                await context.SaveChangesAsync();
+                _repository.SaveChanges();          
             }
             display("Method Create finish refresh articles in database");
         }

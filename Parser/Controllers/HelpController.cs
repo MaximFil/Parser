@@ -6,6 +6,7 @@ using Parser.DAL;
 using Parser.DAL.Entities;
 using Parser.Repository.Repositories;
 using Parser.ViewModels;
+using System.Drawing;
 
 namespace Parser.Controllers
 {
@@ -37,12 +38,8 @@ namespace Parser.Controllers
             var nameSitesUser = new List<NameSiteViewModel>();
             using (_context)
             {
-                var userSitesIds = _userRepository.GetUser()
-                    .Include(u => u.UserSites)
-                    .FirstOrDefault()
-                    .UserSites
-                    .Select(s => s.SiteId);
-                var sites = _siteRepository.GetSites();
+                var userSitesIds = _userRepository.GetUserSitesIds();
+                var sites = _siteRepository.GetSites().ToList();
                 foreach (var site in sites)
                 {
                     var select = false;
@@ -67,8 +64,7 @@ namespace Parser.Controllers
                 var userId = _userRepository.GetUserId();
                 if (ModelState.IsValid)
                 {
-                    var article = _userArticleRepository.GetUserArticles()
-                        .FirstOrDefault(u=>u.ArticleId==articleId && u.UserId==userId);
+                    var article = _userArticleRepository.GetUserArticle(userId, articleId);
                     if (article == null)
                     {                    
                     _userArticleRepository.AddUserArticle(
@@ -107,12 +103,12 @@ namespace Parser.Controllers
                             _userSiteRepository.Add(
                                 new UserSite
                                 {
-                                    UserId = _context.Users.First().Id,
-                                    SiteId = _context.Sites.FirstOrDefault(t => t.Name == nameSite.NameSite).Id
+                                    UserId = _userRepository.GetUserId(),
+                                    SiteId = _siteRepository.GetSiteidForNameSite(nameSite.NameSite)
                                 });
                         }
                     }
-                    _userRepository.GetUser().First().ViewSetting = showArticles;
+                    _userRepository.SetShowArticle(showArticles);
                     _repository.SaveChanges();
                     return Ok();
                 }
@@ -126,8 +122,8 @@ namespace Parser.Controllers
             using (_context)
             {
                 if (ModelState.IsValid)
-                {              
-                    var userArticle = _userArticleRepository.GetUserArticles().FirstOrDefault(u => u.ArticleId == idArticle);
+                {
+                    var userArticle = _userArticleRepository.GetUserArticle(idArticle);
                     if (userArticle==null)
                     {
                         _userArticleRepository.AddUserArticle(
@@ -140,7 +136,7 @@ namespace Parser.Controllers
                     }
                     else
                     {
-                        _userArticleRepository.GetUserArticles().First(u => u.ArticleId == idArticle).Deleted = true;
+                        _userArticleRepository.SetDeletedForArticleId(true,idArticle);
                     }
                     _repository.SaveChanges();
                     return Ok();
@@ -158,24 +154,13 @@ namespace Parser.Controllers
             {
                 var showArticle = _userRepository.GetUserViewSetting();
                 var userId = _userRepository.GetUserId();
-                if (showArticle == false)
+                if (showArticle)
                 {
-                    article = _articleRepository.GetArticles()
-                        .Include(a => a.UserArticles)
-                        .Where(a => a.SiteId == idSite)
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.UserId == userId) == null)
-                        .Where(a => a.Id < idLastArticle)
-                        .OrderByDescending(a=>a.Id)
-                        .FirstOrDefault();
+                    article = _articleRepository.GetShowArticle(idSite,idLastArticle, userId);                 
                 }
                 else
                 {
-                    article = _articleRepository.GetArticles()
-                        .Where(a => a.SiteId == idSite)
-                        .Where(a => a.Id < idLastArticle)
-                        .Where(a => a.UserArticles.FirstOrDefault(u => u.Deleted == true && u.UserId==userId) == null)
-                        .OrderByDescending(a => a.Id)
-                        .FirstOrDefault();
+                    article = _articleRepository.GetAllArticle(idSite, idLastArticle, userId);
                 }
                 if (article!=null)
                 {

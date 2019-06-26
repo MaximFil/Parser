@@ -17,9 +17,25 @@ namespace Parser.Repository.Repositories
             _context = context;
         }
 
-        public List<Site> GetSites()
+        public DbSet<Site> GetSites()
         {
-            return _context.Sites.ToList();
+            return _context.Sites;
+        }
+        public int GetSiteIdForDomain(string domain)
+        {
+            return _context.Sites.FirstOrDefault(t => t.Domain == domain).Id;
+        }
+        public void Add(Site site)
+        {
+            _context.Sites.Add(site);
+        }
+        public bool Any()
+        {
+            return _context.Sites.Any();
+        }
+        public int GetSiteidForNameSite(string nameSite)
+        {
+            return _context.Sites.FirstOrDefault(t => t.Name == nameSite).Id;
         }
     }
 }

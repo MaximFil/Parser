@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Parser.DAL;
 using Parser.DAL.Entities;
+using Parser.Repository.Repositories;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,27 +17,29 @@ namespace ParserService
         {
             using (var context = new ApplicationDbContext(options))
             {
-                if (!context.Sites.Any())
+                var siteRepository = new SiteRepository(context);
+                var repository = new Repository(context);
+                if (!siteRepository.Any())
                 {
-                    context.Sites.Add
+                    siteRepository.Add
                         (new Site
                         {
                             Name = "habr",
                             Domain = "habr.com"
                         });
-                    context.Sites.Add
+                    siteRepository.Add
                         (new Site
                         {
                             Name = "tut.by",
                             Domain = "news.tut.by"
                         });
-                    context.Sites.Add
+                    siteRepository.Add
                         (new Site
                         {
                             Name = "belta",
                             Domain = "www.belta.by"
                         });
-                    context.SaveChanges();
+                    repository.SaveChanges();                    
                 }
             }
         }

@@ -8,6 +8,7 @@ using Parser.DAL.Entities;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Parser.DAL;
+using Parser.Repository.Repositories;
 
 namespace Service
 {
@@ -20,11 +21,13 @@ namespace Service
         private readonly string _domainBelta;
         private readonly DbContextOptions<ApplicationDbContext> _options;
         private readonly ApplicationDbContext _context;
+        private readonly SiteRepository _siteRepository;
 
         public ParserHelper(DbContextOptions<ApplicationDbContext> options)
         {
             _options = options;
             _context = new ApplicationDbContext(_options);
+            _siteRepository = new SiteRepository(_context);
             _urlHabr = ConfigurationManager.AppSettings["UrlHabr"];
             _urlTutBy = ConfigurationManager.AppSettings["UrlTutBy"];
             _urlBelta = ConfigurationManager.AppSettings["UrlBelta"];
@@ -35,7 +38,7 @@ namespace Service
         public async Task<List<Article>> GetHabrArticles()
         {
             var domain = new Uri(_urlHabr).Host;
-            var siteId = _context.Sites.FirstOrDefault(t=>t.Domain==domain).Id;
+            var siteId = _siteRepository.GetSiteIdForDomain(domain);
             string сontent;
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
@@ -68,7 +71,7 @@ namespace Service
         public async Task<List<Article>> GetTutByArticles()
         {
             var domain = new Uri(_urlTutBy).Host;
-            var siteId = _context.Sites.FirstOrDefault(t => t.Domain == domain).Id;
+            var siteId = _siteRepository.GetSiteIdForDomain(domain);
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync(_urlTutBy);
@@ -119,7 +122,7 @@ namespace Service
         public async Task<List<Article>> GetBeltaArticles()
         {
             var domain = new Uri(_urlBelta).Host;
-            var siteId = _context.Sites.FirstOrDefault(t => t.Domain == domain).Id;
+            var siteId = _siteRepository.GetSiteIdForDomain(domain);
             var articles = new List<Article>();
             var config = AngleSharp.Configuration.Default.WithDefaultLoader();
             var document = await BrowsingContext.New(config).OpenAsync(_urlBelta);
